@@ -514,6 +514,9 @@ function Header() {
                 <li>
                     <NavLink to="/about" className={({isActive}) => isActive ? "active" : ""}>About</NavLink>
                 </li>
+                {/*<li>*/}
+                {/*    <NavLink to="/news" className={({isActive}) => isActive ? "active" : ""}>News</NavLink>*/}
+                {/*</li>*/}
                 <li>
                     <NavLink to="/contact" className={({isActive}) => isActive ? "active" : ""}>Contact</NavLink>
                 </li>
@@ -521,7 +524,7 @@ function Header() {
             <ul className="header-btn">
                 {isLoggedIn ? (
                     <>
-                        <li>
+                    <li>
                             <NavLink to="/diagnosis" className="diagnosis-btn">Diagnostic</NavLink>
                         </li>
                         <li>

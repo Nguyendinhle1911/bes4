@@ -7,6 +7,7 @@ import Header from './components/Header/Header';
 import Appointment from "./components/Appointment/Appointment";
 import Dashboard from "./components/Dashboard/Dashboard";
 import Diagnosis from "./components/Diagnosis/Diagnosis";
+import News  from "./components/News/News";
 
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
                 <Route path='/appointment' element={<Appointment />} />
                 <Route path='/dashboard' element={<Dashboard />} />
                 <Route path='/diagnosis' element={<Diagnosis />} />
+                <Route path='/News' element={<News />} />
             </Routes>
         </div>
     );

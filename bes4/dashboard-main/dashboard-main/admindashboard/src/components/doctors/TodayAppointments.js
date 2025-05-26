@@ -60,6 +60,7 @@ const TodayAppointments = () => {
                 }
             })
                 .then(response => {
+                    console.log('response: ' + response);
                     setTodayAppointments(response.data);
                 })
                 .catch(error => {

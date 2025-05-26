@@ -32,7 +32,7 @@ function Diagnosis() {
     const loadMedicalHistory = async () => {
         setLoading(true); // Bắt đầu tải dữ liệu
         try {
-            const response = await axios.get(`http://localhost:8080/api/v1/medicalrecords/search`, {
+            const response = await axios.get(`http://localhost:8081/api/v1/medicalrecords/search`, {
                 params: {patient_id: patientId} // Truyền patient_id dưới dạng tham số
             });
             setMedicalHistory(response.data); // Lưu lịch sử bệnh án của bệnh nhân
@@ -80,7 +80,7 @@ function Diagnosis() {
 
         try {
             // Gửi ảnh đến Spring Boot để lưu trữ và nhận lại đường dẫn ảnh
-            const imageUploadResponse = await axios.post('http://localhost:8080/api/v1/medicalrecords/images/upload', formData, {
+            const imageUploadResponse = await axios.post('http://localhost:8081/api/v1/medicalrecords/images/upload', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
@@ -130,7 +130,7 @@ function Diagnosis() {
             };
 
             // Gửi dữ liệu bệnh án đến API Spring Boot để lưu vào database
-            await axios.post('http://localhost:8080/api/v1/medicalrecords/insert', medicalRecordData);
+            await axios.post('http://localhost:8081/api/v1/medicalrecords/insert', medicalRecordData);
 
             // Hiển thị dữ liệu trên giao diện
             setFullText(`
