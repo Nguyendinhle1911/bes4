@@ -1,16 +1,18 @@
-import React, {useEffect, useState} from 'react';
-import '../News/News.css';
-import $ from 'jquery'
+import React, { useEffect, useState } from 'react';
+import './News.css';
+import $ from 'jquery';
 import logo from "../img/fpt-health-high-resolution-logo-transparent-white.png";
+import bannerImg from '../img/pexels-artempodrez-5726794.jpg';
 
 const News = () => {
     const [articles, setArticles] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    $(document).ready(function () {
+    useEffect(() => {
+        // Cập nhật class active cho liên kết News
         $(".links li a").removeClass("active");
-        $(".links li:nth-child(4) a").addClass("active");
-    });
+        $(".links li a[href='/news']").addClass("active");
+    }, []);
 
     useEffect(() => {
         const fetchArticles = async () => {
@@ -25,7 +27,7 @@ const News = () => {
                 setArticles(data);
                 localStorage.setItem('newsArticles', JSON.stringify(data));
             } catch (error) {
-                console.error('Error fetching data:', error);
+                console.error('Lỗi khi tải dữ liệu:', error);
             } finally {
                 setLoading(false);
             }
@@ -36,33 +38,44 @@ const News = () => {
 
     return (
         <div>
+            <section className="news-banner-v1">
+                <h4>Tin tức</h4>
+                <img alt="news-banner" src={bannerImg} className="news-img-v1" />
+                <div className="news-overlay-v1"></div>
+            </section>
             {loading ? (
-                <div id="loading-div">
-                    <div className="spinner"></div>
+                <div className="loading-div-v1">
+                    <div className="spinner-v1"></div>
                 </div>
             ) : (
                 <div>
-                    <div className="news-container">
-                        <div className="div-title">
-                            <h1>Latest News</h1>
+                    <div className="news-container-v1">
+                        <div className="div-title-v1">
+                            <h1>Latest news</h1>
                         </div>
-                        {articles.map((article, i) => (
-                            <div key={i} className="news-item">
-                                {article.image && <img src={article.image} alt={article.title} width="300"/>}
-                                <div className="news-item-right">
-                                    <div className="news-item-top">
+                        <div className="news-grid-v1">
+                            {articles.map((article, i) => (
+                                <div key={i} className="news-item-v1">
+                                    {article.image && (
+                                        <div className="news-image-v1">
+                                            <img src={article.image} alt={article.title} />
+                                        </div>
+                                    )}
+                                    <div className="news-content-v1">
                                         <a href={article.link} target="_blank" rel="noopener noreferrer">
-                                            <p className="news-title">{article.title}</p>
+                                            <h3 className="news-title-v1">{article.title}</h3>
                                         </a>
-                                        <p className="news-description">{article.description}</p>
+                                        <p className="news-description-v1">{article.description}</p>
+                                        <a href={article.link} target="_blank" rel="noopener noreferrer" className="read-more-v1">
+                                            Đọc thêm
+                                            <img width="20" height="20" src="https://img.icons8.com/ios-filled/50/004b91/right.png" alt="right" />
+                                        </a>
                                     </div>
                                 </div>
-                            </div>
-                        ))}
+                            ))}
+                        </div>
                     </div>
-                </div>
-            )}
-            <footer>
+              <footer>
                 <div className="footer-container-top">
                     <div className="footer-logo">
                         <img src={logo} alt="fpt-health" style={{width: 140 + 'px', height: 40 + 'px'}}/>
@@ -134,6 +147,8 @@ const News = () => {
                     <div><a>Terms of use</a> | <a>Privacy Policy</a></div>
                 </div>
             </footer>
+                </div>
+            )}
         </div>
     );
 }

@@ -8,6 +8,7 @@ import Appointment from "./components/Appointment/Appointment";
 import Dashboard from "./components/Dashboard/Dashboard";
 import Diagnosis from "./components/Diagnosis/Diagnosis";
 import News  from "./components/News/News";
+import HealthTips from "./components/Tips/HealthTips";
 
 
 function App() {
@@ -22,6 +23,7 @@ function App() {
                 <Route path='/dashboard' element={<Dashboard />} />
                 <Route path='/diagnosis' element={<Diagnosis />} />
                 <Route path='/News' element={<News />} />
+                <Route path='/Health-Tips' element={<HealthTips />} />
             </Routes>
         </div>
     );
