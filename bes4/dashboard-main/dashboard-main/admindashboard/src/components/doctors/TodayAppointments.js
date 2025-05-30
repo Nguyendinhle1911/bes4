@@ -20,9 +20,11 @@ const TodayAppointments = () => {
     const [newMedicalRecord, setNewMedicalRecord] = useState({
         symptoms: '',
         diagnosis: '',
-        treatment: '',
-        prescription: ''
+        test_results: '',
+        prescription: '',
+        notes: ''
     });
+    const [currentStep, setCurrentStep] = useState(1);
 
     const timeSlots = [
         { label: '08:00 AM - 09:00 AM', value: 1, start: '08:00', end: '09:00' },
@@ -110,7 +112,7 @@ const TodayAppointments = () => {
         })
             .then(response => {
                 setPatientMedicalRecords(response.data);
-                axios.get(`http://localhost:8081/api/v1/patients/${patientId}`)
+                axios.get('http://localhost:8081/api/v1/patients/' + patientId)
                     .then(res => {
                         setPatientName(res.data.patient_name);
                         setPatientEmail(res.data.patient_email);
@@ -125,13 +127,29 @@ const TodayAppointments = () => {
             });
     };
 
+    const handleCloseMedicalRecordsDialog = () => {
+        setOpenMedicalRecordsDialog(false);
+        setPatientMedicalRecords([]);
+        setPatientName('');
+        setPatientEmail('');
+    };
+
     const handleAddMedicalRecordOpen = (appointment) => {
         setSelectedAppointment(appointment);
+        setCurrentStep(1);
         setOpenAddMedicalRecordDialog(true);
     };
 
     const handleAddMedicalRecordClose = () => {
         setOpenAddMedicalRecordDialog(false);
+        setNewMedicalRecord({
+            symptoms: '',
+            diagnosis: '',
+            test_results: '',
+            prescription: '',
+            notes: ''
+        });
+        setCurrentStep(1);
     };
 
     const handleNewMedicalRecordChange = (e) => {
@@ -140,6 +158,14 @@ const TodayAppointments = () => {
             ...prevData,
             [name]: value,
         }));
+    };
+
+    const handleNextStep = () => {
+        setCurrentStep(prev => prev + 1);
+    };
+
+    const handlePrevStep = () => {
+        setCurrentStep(prev => prev - 1);
     };
 
     const handleAddMedicalRecordSubmit = () => {
@@ -161,20 +187,18 @@ const TodayAppointments = () => {
                 setNewMedicalRecord({
                     symptoms: '',
                     diagnosis: '',
-                    treatment: '',
-                    prescription: ''
+                    test_results: '',
+                    prescription: '',
+                    notes: ''
                 });
                 setSuccessMessage('Add Medical Record Successfully!');
                 setTimeout(() => setSuccessMessage(''), 2000);
                 setOpenAddMedicalRecordDialog(false);
+                setCurrentStep(1);
             })
             .catch(error => {
                 console.error('Lỗi khi thêm bệnh án', error);
             });
-    };
-
-    const handleCloseMedicalRecordsDialog = () => {
-        setOpenMedicalRecordsDialog(false);
     };
 
     const handleNewAppointmentOpen = (appointment) => {
@@ -264,10 +288,12 @@ const TodayAppointments = () => {
                 <ul className="appointments-list">
                     {filteredTodayAppointments.map((appointment, index) => (
                         <li key={index}>
-                            <div><p>Patient Name: {appointment.patient?.[0]?.patient_name || 'N/A'}</p>
+                            <div>
+                                <p>Patient Name: {appointment.patient?.[0]?.patient_name || 'N/A'}</p>
                                 <p>Date: {new Date(appointment.medical_day).toLocaleDateString()}</p>
                                 <p>Time: {getTimeSlotLabel(appointment.slot)}</p>
-                                <p>Status: {appointment.status}</p></div>
+                                <p>Status: {appointment.status}</p>
+                            </div>
                             {appointment.status !== 'Completed' && (
                                 <div>
                                     <select value={newStatus} onChange={handleNewStatusChange}>
@@ -275,15 +301,9 @@ const TodayAppointments = () => {
                                         <option value="Cancelled">Cancelled</option>
                                         <option value="Completed">Completed</option>
                                     </select>
-                                    <button onClick={() => handleUpdateStatus(appointment.appointment_id)}>Update
-                                        Status
-                                    </button>
-                                    <button onClick={() => handleAddMedicalRecordOpen(appointment)}>Add medical record
-                                    </button>
-                                    <button
-                                        onClick={() => handleShowMedicalRecords(appointment.patient?.[0]?.patient_id)}>Show
-                                        medical records
-                                    </button>
+                                    <button onClick={() => handleUpdateStatus(appointment.appointment_id)}>Update Status</button>
+                                    <button onClick={() => handleAddMedicalRecordOpen(appointment)}>Add medical record</button>
+                                    <button onClick={() => handleShowMedicalRecords(appointment.patient?.[0]?.patient_id)}>Show medical records</button>
                                 </div>
                             )}
                             {appointment.status === 'Completed' && (
@@ -297,38 +317,85 @@ const TodayAppointments = () => {
                 </ul>
                 {openAddMedicalRecordDialog && (
                     <div className="dialog">
-                        <div className="dialog-title">Add Medical Record</div>
+                        <div className="dialog-title">Add Medical Record - Step {currentStep} of 6</div>
                         <div className="dialog-content">
-                            <input
-                                type="text"
-                                name="symptoms"
-                                placeholder="Symptoms"
-                                value={newMedicalRecord.symptoms}
-                                onChange={handleNewMedicalRecordChange}
-                            />
-                            <input
-                                type="text"
-                                name="diagnosis"
-                                placeholder="Diagnosis"
-                                value={newMedicalRecord.diagnosis}
-                                onChange={handleNewMedicalRecordChange}
-                            />
-                            <textarea
-                                name="treatment"
-                                placeholder="Prognosis"
-                                value={newMedicalRecord.treatment}
-                                onChange={handleNewMedicalRecordChange}
-                            />
-                            <textarea
-                                name="prescription"
-                                placeholder="Notes"
-                                value={newMedicalRecord.prescription}
-                                onChange={handleNewMedicalRecordChange}
-                            />
+                            {currentStep === 1 && (
+                                <div>
+                                    <label>Please enter patient's symptoms</label>
+                                    <textarea
+                                        name="symptoms"
+                                        placeholder="Enter patient's symptoms here"
+                                        value={newMedicalRecord.symptoms}
+                                        onChange={handleNewMedicalRecordChange}
+                                    />
+                                </div>
+                            )}
+                            {currentStep === 2 && (
+                                <div>
+                                    <label>Enter doctor's diagnosis</label>
+                                    <textarea
+                                        name="diagnosis"
+                                        placeholder="Enter diagnosis"
+                                        value={newMedicalRecord.diagnosis}
+                                        onChange={handleNewMedicalRecordChange}
+                                    />
+                                </div>
+                            )}
+                            {currentStep === 3 && (
+                                <div>
+                                    <label>Test Results</label>
+                                    <textarea
+                                        name="test_results"
+                                        placeholder="Enter test results"
+                                        value={newMedicalRecord.test_results}
+                                        onChange={handleNewMedicalRecordChange}
+                                    />
+                                </div>
+                            )}
+                            {currentStep === 4 && (
+                                <div>
+                                    <label>Prescription</label>
+                                    <textarea
+                                        name="prescription"
+                                        placeholder="Enter prescription"
+                                        value={newMedicalRecord.prescription}
+                                        onChange={handleNewMedicalRecordChange}
+                                    />
+                                </div>
+                            )}
+                            {currentStep === 5 && (
+                                <div>
+                                    <label>Notes</label>
+                                    <textarea
+                                        name="notes"
+                                        placeholder="Enter notes"
+                                        value={newMedicalRecord.notes}
+                                        onChange={handleNewMedicalRecordChange}
+                                    />
+                                </div>
+                            )}
+                            {currentStep === 6 && (
+                                <div>
+                                    <h4>Review Medical Record</h4>
+                                    <p><strong>Symptoms:</strong> {newMedicalRecord.symptoms || 'Not provided'}</p>
+                                    <p><strong>Diagnosis:</strong> {newMedicalRecord.diagnosis || 'Not provided'}</p>
+                                    <p><strong>Test Results:</strong> {newMedicalRecord.test_results || 'Not provided'}</p>
+                                    <p><strong>Prescription:</strong> {newMedicalRecord.prescription || 'Not provided'}</p>
+                                    <p><strong>Notes:</strong> {newMedicalRecord.notes || 'Not provided'}</p>
+                                </div>
+                            )}
                         </div>
                         <div className="dialog-actions">
                             <button onClick={handleAddMedicalRecordClose} className="btn btn-danger">Cancel</button>
-                            <button onClick={handleAddMedicalRecordSubmit} className="btn btn-primary">Add</button>
+                            {currentStep > 1 && (
+                                <button onClick={handlePrevStep} className="btn btn-secondary">Previous</button>
+                            )}
+                            {currentStep < 6 && (
+                                <button onClick={handleNextStep} className="btn btn-primary">Next</button>
+                            )}
+                            {currentStep === 6 && (
+                                <button onClick={handleAddMedicalRecordSubmit} className="btn btn-primary">Add</button>
+                            )}
                         </div>
                     </div>
                 )}
@@ -371,9 +438,12 @@ const TodayAppointments = () => {
                                     <li key={index}>
                                         <p>Medical Record ID: {record.record_id}</p>
                                         <div className="medical-record-details">
-                                            <p><strong>Symptoms:</strong> {record.symptoms}</p>
-                                            <p><strong>Diagnosis:</strong> {record.diagnosis}</p>
-                                            <p><strong>Date:</strong> {record.follow_up_date}</p>
+                                            <p><strong>Symptoms:</strong> {record.symptoms || 'Not Available'}</p>
+                                            <p><strong>Diagnosis:</strong> {record.diagnosis || 'Not Available'}</p>
+                                            <p><strong>Test Results:</strong> {record.test_results || 'Not Available'}</p>
+                                            <p><strong>Prescription:</strong> {record.prescription || 'Not Available'}</p>
+                                            <p><strong>Notes:</strong> {record.notes || 'Not Available'}</p>
+                                            <p><strong>Date:</strong> {record.follow_up_date || 'Not Available'}</p>
                                             <button onClick={() => viewRecordDetails(record)}>View Details</button>
                                         </div>
                                     </li>

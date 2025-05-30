@@ -5,16 +5,17 @@ import Sidebar from './Sidebar';
 import './DoctorDashboard.css';
 
 const DoctorDashboard = () => {
-    const [activeView, setActiveView] = useState(null); // 'today', 'month', 'records', or null
+    const [activeView, setActiveView] = useState(null);
     const [doctor, setDoctor] = useState(null);
     const [todayAppointments, setTodayAppointments] = useState([]);
     const [monthAppointments, setMonthAppointments] = useState([]);
-    const [appointments, setAppointments] = useState([]); // Added for search results
+    const [appointments, setAppointments] = useState([]);
     const [medicalRecords, setMedicalRecords] = useState([]);
     const [error, setError] = useState('');
     const [selectedAppointment, setSelectedAppointment] = useState(null);
     const [newStatus, setNewStatus] = useState('');
     const [openEditDialog, setOpenEditDialog] = useState(false);
+    const [openDoctorInfoDialog, setOpenDoctorInfoDialog] = useState(false);
     const [openMedicalRecordsDialog, setOpenMedicalRecordsDialog] = useState(false);
     const [openAddMedicalRecordDialog, setOpenAddMedicalRecordDialog] = useState(false);
     const [patientMedicalRecords, setPatientMedicalRecords] = useState([]);
@@ -46,6 +47,31 @@ const DoctorDashboard = () => {
 
     const navigate = useNavigate();
 
+    // Thiết lập ngày mặc định cho startDate và endDate
+    useEffect(() => {
+        const today = new Date();
+        
+        // Tính ngày 15 ngày trước
+        const defaultStartDate = new Date(today);
+        defaultStartDate.setDate(today.getDate() - 15);
+        
+        // Tính ngày 15 ngày sau
+        const defaultEndDate = new Date(today);
+        defaultEndDate.setDate(today.getDate() + 15);
+
+        // Định dạng ngày thành YYYY-MM-DD
+        const formatDate = (date) => {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        };
+
+        // Cập nhật state
+        setStartDate(formatDate(defaultStartDate));
+        setEndDate(formatDate(defaultEndDate));
+    }, []); // Chạy một lần khi component mount
+
     useEffect(() => {
         const storedDoctorId = localStorage.getItem('doctor_id');
         if (storedDoctorId) {
@@ -61,8 +87,8 @@ const DoctorDashboard = () => {
                     });
                 })
                 .catch(error => {
-                    console.error('Lỗi khi lấy thông tin bác sĩ', error);
-                    setError('Lỗi khi lấy thông tin bác sĩ');
+                    console.error('Error fetching doctor information', error);
+                    setError('Error fetching doctor information');
                 });
 
             const today = new Date().toISOString().split('T')[0];
@@ -76,8 +102,8 @@ const DoctorDashboard = () => {
                     setTodayAppointments(response.data);
                 })
                 .catch(error => {
-                    console.error('Lỗi khi lấy lịch khám hôm nay', error);
-                    setError('Lỗi khi lấy lịch khám hôm nay');
+                    console.error('Error fetching today\'s appointments', error);
+                    setError('Error fetching today\'s appointments');
                 });
 
             const firstDayOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0];
@@ -93,8 +119,8 @@ const DoctorDashboard = () => {
                     setMonthAppointments(response.data);
                 })
                 .catch(error => {
-                    console.error('Lỗi khi lấy lịch khám trong tháng', error);
-                    setError('Lỗi khi lấy lịch khám trong tháng');
+                    console.error('Error fetching monthly appointments', error);
+                    setError('Error fetching monthly appointments');
                 });
 
             axios.get(`http://localhost:8081/api/v1/medicalrecords/doctor/${storedDoctorId}`)
@@ -102,8 +128,8 @@ const DoctorDashboard = () => {
                     setMedicalRecords(response.data);
                 })
                 .catch(error => {
-                    console.error('Lỗi khi lấy bệnh án', error);
-                    setError('Lỗi khi lấy bệnh án');
+                    console.error('Error fetching medical records', error);
+                    setError('Error fetching medical records');
                 });
         }
     }, []);
@@ -139,8 +165,8 @@ const DoctorDashboard = () => {
                     }
                 })
                 .catch(error => {
-                    console.error('Lỗi khi tìm kiếm', error);
-                    setError('Lỗi khi tìm kiếm');
+                    console.error('Error during search', error);
+                    setError('Error during search');
                 });
         }
     };
@@ -176,7 +202,7 @@ const DoctorDashboard = () => {
 
             axios.put('http://localhost:8081/api/v1/doctors/update', updateData)
                 .then(response => {
-                    console.log('Cập nhật thông tin bác sĩ thành công:', response.data);
+                    console.log('Doctor information updated successfully:', response.data);
                     setDoctor((prevDoctor) => ({
                         ...prevDoctor,
                         doctor_email: editData.doctor_email,
@@ -185,8 +211,8 @@ const DoctorDashboard = () => {
                     setOpenEditDialog(false);
                 })
                 .catch(error => {
-                    console.error('Lỗi khi cập nhật thông tin bác sĩ', error);
-                    setError('Lỗi khi cập nhật thông tin bác sĩ');
+                    console.error('Error updating doctor information', error);
+                    setError('Error updating doctor information');
                 });
         }
     };
@@ -210,6 +236,28 @@ const DoctorDashboard = () => {
         navigate('/medicalrecords');
     };
 
+    const handleDoctorInfoOpen = () => {
+        setOpenDoctorInfoDialog(true);
+    };
+
+    const handleDoctorInfoClose = () => {
+        setOpenDoctorInfoDialog(false);
+    };
+
+    const getTimeSlotLabel = (slotValue) => {
+        const timeSlots = [
+            { value: 1, label: '08:00 AM - 09:00 AM' },
+            { value: 2, label: '09:00 AM - 10:00 AM' },
+            { value: 3, label: '10:00 AM - 11:00 AM' },
+            { value: 4, label: '11:00 AM - 12:00 PM' },
+            { value: 5, label: '01:00 PM - 02:00 PM' },
+            { value: 6, label: '02:00 PM - 03:00 PM' },
+            { value: 7, label: '03:00 PM - 04:00 PM' },
+            { value: 8, label: '04:00 PM - 05:00 PM' }
+        ];
+        const slot = timeSlots.find(s => s.value === slotValue);
+        return slot ? slot.label : 'N/A';
+    };
 
     return (
         <div className="doctor-dashboard">
@@ -261,7 +309,7 @@ const DoctorDashboard = () => {
                         ) : (
                             <input
                                 type="text"
-                                placeholder="Search by Patient Name or Email"
+                                placeholder="Search by patient name or email"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                             />
@@ -275,32 +323,88 @@ const DoctorDashboard = () => {
                     </div>
                 </div>
                 <div className="content">
-
                     {doctor && (
                         <div className="doctor-info">
-                            <h2>Welcome, {doctor.doctor_name}</h2>
-                            <p>Email: {doctor.doctor_email}</p>
-                            <p>Address: {doctor.doctor_address}</p>
-                            <p>Working status: {doctor.working_status}</p>
-                            <button className="btn btn-primary" onClick={handleEditOpen}>Edit Profile</button>
-                        </div>
-                    )}
-                    <div className="stats">
-                        <div className="card">
-                            <div className="card-content">
-                                <h4>Today's Appointment Schedule</h4>
-                                <h3>{todayAppointments.length}</h3>
-                                <button className="btn btn-primary" onClick={() => navigate('/todayappointments')}>
-                                    View today's appointments
-                                </button>
+                            <div className="doctor-info-icon" onClick={handleDoctorInfoOpen}>
+                                <img
+                                    src="https://img.icons8.com/ios-filled/50/004B91/user-male-circle.png"
+                                    alt="user-icon"
+                                    width="50"
+                                    height="50"
+                                />
+                                <p>{doctor.doctor_name}</p>
                             </div>
                         </div>
+                    )}
+                    {openDoctorInfoDialog && doctor && (
+                        <div className="dialog doctor-info-dialog">
+                            <div className="dialog-title">
+                                <button className="btn btn-danger close-btn" onClick={handleDoctorInfoClose}>X</button>
+                                <span>Doctor Information</span>
+                            </div>
+                            <div className="dialog-content">
+                                <p><strong>Name:</strong> {doctor.doctor_name}</p>
+                                <p><strong>Email:</strong> {doctor.doctor_email}</p>
+                                <p><strong>Address:</strong> {doctor.doctor_address}</p>
+                                <p><strong>Working Status:</strong> {doctor.working_status}</p>
+                                <p><strong>Department:</strong> {doctor.department || 'N/A'}</p>
+                            </div>
+                            <div className="dialog-actions">
+                                <button className="btn btn-primary" onClick={handleEditOpen}>Edit Information</button>
+                            </div>
+                        </div>
+                    )}
+                    <div className="today-appointments-table">
+                        <h3>Today's Appointments</h3>
+                        {todayAppointments.length === 0 ? (
+                            <p>No appointments today.</p>
+                        ) : (
+                            <table className="appointment-table">
+                                <thead>
+                                    <tr>
+                                        <th>DTR Name</th>
+                                        <th>DTR Email</th>
+                                        <th>DPM</th>
+                                        <th>PT Name</th>
+                                        <th>PT Email</th>
+                                        <th>Appoint Date</th>
+                                        <th>Time</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {todayAppointments.map((appointment, index) => (
+                                        <tr key={index}>
+                                            <td>{doctor?.doctor_name || 'N/A'}</td>
+                                            <td>{doctor?.doctor_email || 'N/A'}</td>
+                                            <td>{doctor?.department || 'N/A'}</td>
+                                            <td>{appointment.patient?.[0]?.patient_name || 'N/A'}</td>
+                                            <td>{appointment.patient?.[0]?.patient_email || 'N/A'}</td>
+                                            <td>{new Date(appointment.medical_day).toLocaleDateString()}</td>
+                                            <td>{getTimeSlotLabel(appointment.slot)}</td>
+                                            <td>{appointment.status}</td>
+                                            <td>
+                                                <button
+                                                    className="btn btn-primary"
+                                                    onClick={() => navigate('/todayappointments')}
+                                                >
+                                                    Examine
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        )}
+                    </div>
+                    <div className="stats">
                         <div className="card">
                             <div className="card-content">
                                 <h4>Monthly Appointments</h4>
                                 <h3>{monthAppointments.length}</h3>
                                 <button className="btn btn-primary" onClick={() => navigate('/monthlyappointments')}>
-                                    View monthly appointments
+                                    View Monthly Appointments
                                 </button>
                             </div>
                         </div>
@@ -309,7 +413,7 @@ const DoctorDashboard = () => {
                                 <h4>Medical Records</h4>
                                 <h3>{medicalRecords.length}</h3>
                                 <button className="btn btn-primary" onClick={() => navigate('/medicalrecords')}>
-                                    View medical records
+                                    View Medical Records
                                 </button>
                             </div>
                         </div>
@@ -322,7 +426,7 @@ const DoctorDashboard = () => {
                                     <li key={index}>
                                         <p>Patient: {appointment.patient?.[0]?.patient_name || 'N/A'}</p>
                                         <p>Date: {new Date(appointment.medical_day).toLocaleDateString()}</p>
-                                        <p>Time: {appointment.slot}</p>
+                                        <p>Time Slot: {getTimeSlotLabel(appointment.slot)}</p>
                                         <p>Status: {appointment.status}</p>
                                     </li>
                                 ))}

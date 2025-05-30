@@ -136,13 +136,13 @@ const RecordDetails = () => {
 
                 <section>
                     <h4>III. Treatment</h4>
-                    <p><strong>Prognosis:</strong></p>
-                    <div className="prognosis-container">
-                        {record.treatment || 'Not Available'}
-                    </div>
-                    <p><strong>Notes:</strong></p>
+                    <p><strong>Prescription:</strong></p>
                     <div className="notes-container">
                         {record.prescription || 'Not Available'}
+                    </div>
+                     <p><strong>Prognosis:</strong></p>
+                    <div className="prognosis-container">
+                        {record.treatment || 'Not Available'}
                     </div>
                 </section>
                 <button onClick={generatePDF} className="download-pdf-button"><img width="20" height="20"

@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import './Dashboard.css';
 import bannerImg from '../img/pexels-pixabay-40568.jpg';
 import axios from "axios";
@@ -18,6 +18,7 @@ function Dashboard() {
     const [editAppointmentData, setEditAppointmentData] = useState(null);
     const [bookedSlots, setBookedSlots] = useState([]);
     const [availableSlots, setAvailableSlots] = useState([]);
+    const [selectedRecord, setSelectedRecord] = useState(null);
 
     const toggleAppointmentVisible = () => {
         setAppointmentVisible(!appointmentVisible);
@@ -26,14 +27,14 @@ function Dashboard() {
     }
 
     const timeSlots = [
-        {label: '08:00 AM - 09:00 AM', value: 1, start: '08:00', end: '09:00'},
-        {label: '09:00 AM - 10:00 AM', value: 2, start: '09:00', end: '10:00'},
-        {label: '10:00 AM - 11:00 AM', value: 3, start: '10:00', end: '11:00'},
-        {label: '11:00 AM - 12:00 AM', value: 4, start: '11:00', end: '12:00'},
-        {label: '01:00 PM - 02:00 PM', value: 5, start: '13:00', end: '14:00'},
-        {label: '02:00 PM - 03:00 PM', value: 6, start: '14:00', end: '15:00'},
-        {label: '03:00 PM - 04:00 PM', value: 7, start: '15:00', end: '16:00'},
-        {label: '04:00 PM - 05:00 PM', value: 8, start: '16:00', end: '17:00'}
+        { label: '08:00 AM - 09:00 AM', value: 1, start: '08:00', end: '09:00' },
+        { label: '09:00 AM - 10:00 AM', value: 2, start: '09:00', end: '10:00' },
+        { label: '10:00 AM - 11:00 AM', value: 3, start: '10:00', end: '11:00' },
+        { label: '11:00 AM - 12:00 AM', value: 4, start: '11:00', end: '12:00' },
+        { label: '01:00 PM - 02:00 PM', value: 5, start: '13:00', end: '14:00' },
+        { label: '02:00 PM - 03:00 PM', value: 6, start: '14:00', end: '15:00' },
+        { label: '03:00 PM - 04:00 PM', value: 7, start: '15:00', end: '16:00' },
+        { label: '04:00 PM - 05:00 PM', value: 8, start: '16:00', end: '17:00' }
     ];
 
     const formatTimeSlot = (slot) => {
@@ -124,6 +125,10 @@ function Dashboard() {
             date: date,
             timeSlot: ''
         });
+    };
+
+    const handleViewDetails = (record) => {
+        setSelectedRecord(record); // Lưu hồ sơ được chọn
     };
 
     const handleTimeSlotChange = (slot) => {
@@ -268,6 +273,7 @@ function Dashboard() {
                 if (patientId) {
                     const response = await axios.get(`http://localhost:8081/api/v1/patients/search?patient_id=${patientId}`);
                     const patientData = response.data[0];
+                    console.log('Patient Data:', patientData);
                     setPatientData(patientData);
                     if (patientData.patient_img) {
                         setImagePath(`http://localhost:8080/${patientData.patient_img}`);
@@ -313,7 +319,7 @@ function Dashboard() {
                 }
             });
             setImagePath(`http://localhost:8081/${response.data.filePath}`);
-            const updatedPatient = {...patientData, patient_img: response.data.filePath};
+            const updatedPatient = { ...patientData, patient_img: response.data.filePath };
             setPatientData(updatedPatient);
             setImageValid(true);
         } catch (error) {
@@ -423,14 +429,14 @@ function Dashboard() {
                             <button className="appointments-cancel" onClick={handleCancelEditAppointment}>Cancel
                             </button>
                             <button className="appointments-save" onClick={handleConfirmEditAppointment}
-                                    disabled={!formData.date || !formData.timeSlot}>Save
+                                disabled={!formData.date || !formData.timeSlot}>Save
                             </button>
                         </div>
                     </div>
                 </div>
             )}
             <section className="dashboard-banner">
-                <img className="dashboard-banner-img" src={bannerImg} alt="dashboard-banner-img"/>
+                <img className="dashboard-banner-img" src={bannerImg} alt="dashboard-banner-img" />
                 <h4>Patient Dashboard</h4>
                 <div className="dashboard-overlay"></div>
             </section>
@@ -438,20 +444,20 @@ function Dashboard() {
                 <section className="dashboard-content">
                     <div className="patient-container">
                         {imageValid ? (
-                            <img id="patientImg" src={imagePath} alt="Patient"/>
+                            <img id="patientImg" src={imagePath} alt="Patient" />
                         ) : (
                             <img id="patientImg" width="150" height="150"
-                                 src="https://img.icons8.com/ios-filled/200/004b91/user-male-circle.png"
-                                 alt="user-male-circle"/>
+                                src="https://img.icons8.com/ios-filled/200/004b91/user-male-circle.png"
+                                alt="user-male-circle" />
                         )}
                         <div className="img-overlay" onClick={() => document.getElementById('ipPatientImg').click()}>
                             <img
                                 width="30" height="30"
                                 src="https://img.icons8.com/ios-filled/200/FFFFFF/available-updates.png"
-                                alt="available-updates"/>Change Image
+                                alt="available-updates" />Change Image
                         </div>
                         <input id="ipPatientImg" type="file" accept="image/*" onChange={handleImageChange}
-                               style={{display: 'none'}}/>
+                            style={{ display: 'none' }} />
                         <div className="container-title">Personal Information
                             {!openEditPatient ? (
                                 <div className="container-title-action"><a onClick={() => setOpenEditPatient(true)}>Edit
@@ -574,9 +580,9 @@ function Dashboard() {
                                                 <div className="appointment-item-header">
                                                     <h3>{new Date(app.appointment_date).toLocaleDateString()}</h3>
                                                     <span className="appointment-status">
-                                                    {getStatusIcon(app.status)}
+                                                        {getStatusIcon(app.status)}
                                                         <p>{app.status}</p>
-                                                </span>
+                                                    </span>
                                                 </div>
                                                 <p>
                                                     <strong>Doctor:</strong> {app.doctor && app.doctor.length > 0 ? app.doctor[0].doctor_name : 'N/A'}
@@ -599,11 +605,11 @@ function Dashboard() {
                                                     <>
                                                         <div className="appointment-action">
                                                             <button className="edit-appointment-button"
-                                                                    onClick={() => handleOpenEditAppointment(app)}
-                                                                    disabled={isEditCancelDisabled(app.medical_day, formatTimeSlot(app.slot))}>Edit
+                                                                onClick={() => handleOpenEditAppointment(app)}
+                                                                disabled={isEditCancelDisabled(app.medical_day, formatTimeSlot(app.slot))}>Edit
                                                             </button>
                                                             <button className="cancel-appointment-button"
-                                                                    disabled={isEditCancelDisabled(app.medical_day, formatTimeSlot(app.slot))}>Cancel
+                                                                disabled={isEditCancelDisabled(app.medical_day, formatTimeSlot(app.slot))}>Cancel
                                                             </button>
                                                         </div>
                                                     </>
@@ -618,30 +624,30 @@ function Dashboard() {
                                             onClick={() => setCurrentAppointmentPage(1)}
                                         >
                                             <img width="18" height="18"
-                                                 src="https://img.icons8.com/ios-filled/200/004b91/first-1.png"
-                                                 alt="first-1"/>
+                                                src="https://img.icons8.com/ios-filled/200/004b91/first-1.png"
+                                                alt="first-1" />
                                         </a>
                                         <a
                                             onClick={() => setCurrentAppointmentPage(prev => Math.max(prev - 1, 1))}
                                         >
                                             <img width="18" height="18"
-                                                 src="https://img.icons8.com/ios-filled/200/004b91/back.png"
-                                                 alt="back"/>
+                                                src="https://img.icons8.com/ios-filled/200/004b91/back.png"
+                                                alt="back" />
                                         </a>
                                         <span>Page {currentAppointmentPage} of {totalAppointmentPages}</span>
                                         <a
                                             onClick={() => setCurrentAppointmentPage(prev => Math.min(prev + 1, totalAppointmentPages))}
                                         >
                                             <img width="18" height="18"
-                                                 src="https://img.icons8.com/ios-filled/200/004b91/forward.png"
-                                                 alt="forward"/>
+                                                src="https://img.icons8.com/ios-filled/200/004b91/forward.png"
+                                                alt="forward" />
                                         </a>
                                         <a
                                             onClick={() => setCurrentAppointmentPage(totalAppointmentPages)}
                                         >
                                             <img width="18" height="18"
-                                                 src="https://img.icons8.com/ios-filled/200/004b91/last-1.png"
-                                                 alt="last-1"/>
+                                                src="https://img.icons8.com/ios-filled/200/004b91/last-1.png"
+                                                alt="last-1" />
                                         </a>
                                     </div>
                                 </div>
@@ -662,42 +668,73 @@ function Dashboard() {
                                                 <p><strong>Symptoms:</strong> {record.symptoms}</p>
                                                 <p><strong>Diagnosis:</strong> {record.diagnosis}</p>
                                                 <div className="record-action">
-                                                    <button className="record-detail-button">View Details</button>
+                                                    <button className="record-detail-button" onClick={() => handleViewDetails(record)}>
+                                                        Xem chi tiết
+                                                    </button>
                                                 </div>
                                             </div>
                                         ))
                                     ) : (
                                         <p>No records available.</p>
                                     )}
+                                    {selectedRecord && (
+                                        <div className="record-details-popup">
+                                            <div className="record-details-overlay" onClick={() => setSelectedRecord(null)}></div>
+                                            <div className="record-details-content">
+                                                <h3>Medical Record Details</h3>
+                                                <p><strong>Record ID:</strong> {selectedRecord.record_id || 'N/A'}</p>
+                                                <p><strong>Follow-up Date:</strong> {selectedRecord.follow_up_date || 'N/A'}</p>
+                                                <p>
+                                                    <strong>Doctor:</strong>
+                                                    {selectedRecord.doctors && selectedRecord.doctors.length > 0
+                                                        ? selectedRecord.doctors[0].doctor_name
+                                                        : 'No information available'}
+                                                </p>
+                                                <p>
+                                                    <strong>Department:</strong>
+                                                    {selectedRecord.doctors && selectedRecord.doctors.length > 0
+                                                        ? getDepartmentName(selectedRecord.doctors[0].department_id)
+                                                        : 'No information available'}
+                                                </p>
+                                                <p><strong>Symptoms:</strong> {selectedRecord.symptoms || 'N/A'}</p>
+                                                <p><strong>Diagnosis:</strong> {selectedRecord.diagnosis || 'N/A'}</p>
+                                                {/* <p><strong>Test Results:</strong> {selectedRecord.test_results || 'N/A'}</p> */}
+                                                <p><strong>Prescription:</strong> {selectedRecord.prescription || 'N/A'}</p>
+                                                {/* <p><strong>Notes:</strong> {selectedRecord.notes || 'N/A'}</p> */}
+                                                <button className="close-button" onClick={() => setSelectedRecord(null)}>Close</button>
+                                            </div>
+                                        </div>
+
+                                    )}
                                     <div className="pagination-controls">
                                         <a
                                             onClick={() => setCurrentRecordPage(1)}
                                         >
                                             <img width="18" height="18"
-                                                 src="https://img.icons8.com/ios-filled/200/004b91/first-1.png"
-                                                 alt="first-1"/>
+                                                src="https://img.icons8.com/ios-filled/200/004b91/first-1.png"
+                                                alt="first-1" />
                                         </a>
                                         <a
                                             onClick={() => setCurrentRecordPage(prev => Math.max(prev - 1, 1))}
                                         >
                                             <img width="18" height="18"
-                                                 src="https://img.icons8.com/ios-filled/200/004b91/back.png"
-                                                 alt="back"/>
+                                                src="https://img.icons8.com/ios-filled/200/004b91/back.png"
+                                                alt="back" />
                                         </a>
                                         <span>Page {currentRecordPage} of {totalRecordPages}</span>
                                         <a
                                             onClick={() => setCurrentRecordPage(prev => Math.min(prev + 1, totalRecordPages))}
                                         >
                                             <img width="18" height="18"
-                                                 src="https://img.icons8.com/ios-filled/200/004b91/forward.png"
-                                                 alt="forward"/>
+                                                src="https://img.icons8.com/ios-filled/200/004b91/forward.png"
+                                                alt="forward" />
                                         </a>
                                         <a
                                             onClick={() => setCurrentRecordPage(totalRecordPages)}
                                         >
                                             <img width="18" height="18"
-                                                 src="https://img.icons8.com/ios-filled/200/004b91/last-1.png"
-                                                 alt="last-1"/>
+                                                src="https://img.icons8.com/ios-filled/200/004b91/last-1.png"
+                                                alt="last-1" />
                                         </a>
                                     </div>
                                 </div>
@@ -712,22 +749,22 @@ function Dashboard() {
             <footer>
                 <div className="footer-container-top">
                     <div className="footer-logo">
-                        <img src={logo} alt="fpt-health" style={{width: 140 + 'px', height: 40 + 'px'}}/>
+                        <img src={logo} alt="fpt-health" style={{ width: 140 + 'px', height: 40 + 'px' }} />
                     </div>
                     <div className="footer-social">
                         <div className="fb-icon">
                             <img width="30" height="30"
-                                 src="https://img.icons8.com/ios-filled/50/FFFFFF/facebook--v1.png"
-                                 alt="facebook--v1"/>
+                                src="https://img.icons8.com/ios-filled/50/FFFFFF/facebook--v1.png"
+                                alt="facebook--v1" />
                         </div>
                         <div className="zl-icon">
                             <img width="30" height="30" src="https://img.icons8.com/ios-filled/50/FFFFFF/zalo.png"
-                                 alt="zalo"/>
+                                alt="zalo" />
                         </div>
                         <div className="ms-icon">
                             <img width="30" height="30"
-                                 src="https://img.icons8.com/ios-filled/50/FFFFFF/facebook-messenger.png"
-                                 alt="facebook-messenger"/>
+                                src="https://img.icons8.com/ios-filled/50/FFFFFF/facebook-messenger.png"
+                                alt="facebook-messenger" />
                         </div>
                     </div>
                 </div>
@@ -755,21 +792,21 @@ function Dashboard() {
                             <div className="footer-contact-item">
                                 <div>
                                     <img width="20" height="20"
-                                         src="https://img.icons8.com/ios-filled/50/FFFFFF/marker.png" alt="marker"/>
+                                        src="https://img.icons8.com/ios-filled/50/FFFFFF/marker.png" alt="marker" />
                                 </div>
                                 <p>8 Ton That Thuyet, My Dinh Ward, Nam Tu Liem District, Ha Noi</p>
                             </div>
                             <div className="footer-contact-item">
                                 <div>
                                     <img width="20" height="20"
-                                         src="https://img.icons8.com/ios-filled/50/FFFFFF/phone.png" alt="phone"/>
+                                        src="https://img.icons8.com/ios-filled/50/FFFFFF/phone.png" alt="phone" />
                                 </div>
                                 <p>+84 987 654 321</p>
                             </div>
                             <div className="footer-contact-item">
                                 <div>
                                     <img width="20" height="20"
-                                         src="https://img.icons8.com/ios-filled/50/FFFFFF/new-post.png" alt="new-post"/>
+                                        src="https://img.icons8.com/ios-filled/50/FFFFFF/new-post.png" alt="new-post" />
                                 </div>
                                 <p>fpthealth@gmail.com</p>
                             </div>
