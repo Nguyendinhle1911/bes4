@@ -73,7 +73,7 @@
 .doctor-dashboard .card {
     background-color: #004B91;
     color: white;
-    padding: 20px;
+    padding: 33px;
     border-radius: 4px;
     text-align: center;
     width: 250px;
@@ -82,7 +82,7 @@
 }
 
 .doctor-dashboard .stats {
-    gap: 30px;
+    gap: 100px;
     display: flex;
     justify-content: center;
     align-items: center;

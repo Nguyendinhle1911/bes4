@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -9,6 +10,7 @@ const TodayAppointments = () => {
     const [todayAppointments, setTodayAppointments] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [newStatus, setNewStatus] = useState('');
+    const [newAppointment, setNewAppointment] = useState('');
     const [selectedAppointment, setSelectedAppointment] = useState(null);
     const [openAddMedicalRecordDialog, setOpenAddMedicalRecordDialog] = useState(false);
     const [openMedicalRecordsDialog, setOpenMedicalRecordsDialog] = useState(false);
@@ -16,13 +18,14 @@ const TodayAppointments = () => {
     const [patientMedicalRecords, setPatientMedicalRecords] = useState([]);
     const [patientName, setPatientName] = useState('');
     const [patientEmail, setPatientEmail] = useState('');
-    const [successMessage, setSuccessMessage] = React.useState('');
+    const [successMessage, setSuccessMessage] = useState('');
     const [newMedicalRecord, setNewMedicalRecord] = useState({
         symptoms: '',
         diagnosis: '',
         test_results: '',
         prescription: '',
-        notes: ''
+        notes: '',
+        image: ''
     });
     const [currentStep, setCurrentStep] = useState(1);
 
@@ -37,18 +40,6 @@ const TodayAppointments = () => {
         { label: '04:00 PM - 05:00 PM', value: 8, start: '16:00', end: '17:00' }
     ];
 
-    const viewRecordDetails = (record) => {
-        navigate('/record-details', { state: { record } });
-    };
-    const [newAppointment, setNewAppointment] = useState({
-        patient_id: '',
-        doctor_id: localStorage.getItem('doctor_id'),
-        medical_day: '',
-        timeSlot: '',
-        status: 'Pending',
-        patient_email: ''
-    });
-
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -62,7 +53,6 @@ const TodayAppointments = () => {
                 }
             })
                 .then(response => {
-                    console.log('response: ' + response);
                     setTodayAppointments(response.data);
                 })
                 .catch(error => {
@@ -147,7 +137,8 @@ const TodayAppointments = () => {
             diagnosis: '',
             test_results: '',
             prescription: '',
-            notes: ''
+            notes: '',
+            image: ''
         });
         setCurrentStep(1);
     };
@@ -189,7 +180,8 @@ const TodayAppointments = () => {
                     diagnosis: '',
                     test_results: '',
                     prescription: '',
-                    notes: ''
+                    notes: '',
+                    image: ''
                 });
                 setSuccessMessage('Add Medical Record Successfully!');
                 setTimeout(() => setSuccessMessage(''), 2000);
@@ -271,6 +263,10 @@ const TodayAppointments = () => {
         navigate('/medicalrecords');
     };
 
+    const viewRecordDetails = (record) => {
+        navigate('/record-details', { state: { record } });
+    };
+
     return (
         <div className="today-appointments">
             <Sidebar
@@ -285,6 +281,13 @@ const TodayAppointments = () => {
                     </div>
                 )}
                 <h3 className="tab-title">Today's Appointments Schedule</h3>
+                <input
+                    type="text"
+                    placeholder="Search by patient name"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="search-input"
+                />
                 <ul className="appointments-list">
                     {filteredTodayAppointments.map((appointment, index) => (
                         <li key={index}>
@@ -317,7 +320,10 @@ const TodayAppointments = () => {
                 </ul>
                 {openAddMedicalRecordDialog && (
                     <div className="dialog">
-                        <div className="dialog-title">Add Medical Record - Step {currentStep} of 6</div>
+                        <div className="dialog-title">
+                            Add more sections for patients
+                            <div>Patient Name: {selectedAppointment ? selectedAppointment.patient?.[0]?.patient_name : 'Unknown Patient'}</div>
+                        </div>
                         <div className="dialog-content">
                             {currentStep === 1 && (
                                 <div>
@@ -339,6 +345,34 @@ const TodayAppointments = () => {
                                         value={newMedicalRecord.diagnosis}
                                         onChange={handleNewMedicalRecordChange}
                                     />
+                                    <label>Upload image from file</label>
+                                    <input
+                                        type="file"
+                                        name="imageFile"
+                                        accept="image/*"
+                                        onChange={(e) => {
+                                            const file = e.target.files[0];
+                                            if (file) {
+                                                const reader = new FileReader();
+                                                reader.onload = () => {
+                                                    handleNewMedicalRecordChange({
+                                                        target: { name: 'image', value: reader.result }
+                                                    });
+                                                };
+                                                reader.readAsDataURL(file);
+                                            }
+                                        }}
+                                    />
+                                    {newMedicalRecord.image && (
+                                        <div style={{ marginTop: '10px' }}>
+                                            <img
+                                                src={newMedicalRecord.image}
+                                                alt="Medical record image"
+                                                style={{ maxWidth: '100%', maxHeight: '200px', objectFit: 'contain', border: '1px solid #000' }}
+                                                onError={(e) => (e.target.style.display = 'none')}
+                                            />
+                                        </div>
+                                    )}
                                 </div>
                             )}
                             {currentStep === 3 && (
@@ -377,6 +411,16 @@ const TodayAppointments = () => {
                             {currentStep === 6 && (
                                 <div>
                                     <h4>Review Medical Record</h4>
+                                    {newMedicalRecord.image && (
+                                        <div style={{ marginTop: '10px' }}>
+                                            <img
+                                                src={newMedicalRecord.image}
+                                                alt="Medical record image"
+                                                style={{ maxWidth: '100%', maxHeight: '200px', objectFit: 'contain', border: '1px solid #000' }}
+                                                onError={(e) => (e.target.style.display = 'none')}
+                                            />
+                                        </div>
+                                    )}
                                     <p><strong>Symptoms:</strong> {newMedicalRecord.symptoms || 'Not provided'}</p>
                                     <p><strong>Diagnosis:</strong> {newMedicalRecord.diagnosis || 'Not provided'}</p>
                                     <p><strong>Test Results:</strong> {newMedicalRecord.test_results || 'Not provided'}</p>
@@ -390,7 +434,19 @@ const TodayAppointments = () => {
                             {currentStep > 1 && (
                                 <button onClick={handlePrevStep} className="btn btn-secondary">Previous</button>
                             )}
-                            {currentStep < 6 && (
+                            {currentStep === 1 && newMedicalRecord.symptoms && (
+                                <button onClick={handleNextStep} className="btn btn-primary">Next</button>
+                            )}
+                            {currentStep === 2 && newMedicalRecord.diagnosis && (
+                                <button onClick={handleNextStep} className="btn btn-primary">Next</button>
+                            )}
+                            {currentStep === 3 && newMedicalRecord.test_results && (
+                                <button onClick={handleNextStep} className="btn btn-primary">Next</button>
+                            )}
+                            {currentStep === 4 && newMedicalRecord.prescription && (
+                                <button onClick={handleNextStep} className="btn btn-primary">Next</button>
+                            )}
+                            {currentStep === 5 && newMedicalRecord.notes && (
                                 <button onClick={handleNextStep} className="btn btn-primary">Next</button>
                             )}
                             {currentStep === 6 && (
@@ -443,6 +499,7 @@ const TodayAppointments = () => {
                                             <p><strong>Test Results:</strong> {record.test_results || 'Not Available'}</p>
                                             <p><strong>Prescription:</strong> {record.prescription || 'Not Available'}</p>
                                             <p><strong>Notes:</strong> {record.notes || 'Not Available'}</p>
+                                            <p><strong>Image URL:</strong> {record.image || 'Not Available'}</p>
                                             <p><strong>Date:</strong> {record.follow_up_date || 'Not Available'}</p>
                                             <button onClick={() => viewRecordDetails(record)}>View Details</button>
                                         </div>

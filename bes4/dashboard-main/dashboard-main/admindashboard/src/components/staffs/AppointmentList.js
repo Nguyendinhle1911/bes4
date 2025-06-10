@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useState }  from 'react';
 import './AppointmentList.css';
+import axios from 'axios';
+import './EditAppointmentModal.css';
 
 const AppointmentList = ({ searchResults, handleEditClick, handleConfirmAppointment }) => {
     return (
@@ -29,10 +31,7 @@ const AppointmentList = ({ searchResults, handleEditClick, handleConfirmAppointm
     );
 };
 
-export default AppointmentList;
-import React, { useState } from 'react';
-import axios from 'axios';
-import './EditAppointmentModal.css';
+
 
 const EditAppointmentModal = ({ appointment, onClose, onSave }) => {
     const [editedAppointment, setEditedAppointment] = useState(appointment);

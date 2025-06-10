@@ -47,19 +47,19 @@ const DoctorDashboard = () => {
 
     const navigate = useNavigate();
 
-    // Thiết lập ngày mặc định cho startDate và endDate
+    // Set default dates for startDate and endDate
     useEffect(() => {
         const today = new Date();
         
-        // Tính ngày 15 ngày trước
+        // Calculate 15 days before
         const defaultStartDate = new Date(today);
         defaultStartDate.setDate(today.getDate() - 15);
         
-        // Tính ngày 15 ngày sau
+        // Calculate 15 days after
         const defaultEndDate = new Date(today);
         defaultEndDate.setDate(today.getDate() + 15);
 
-        // Định dạng ngày thành YYYY-MM-DD
+        // Format date to YYYY-MM-DD
         const formatDate = (date) => {
             const year = date.getFullYear();
             const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -67,10 +67,10 @@ const DoctorDashboard = () => {
             return `${year}-${month}-${day}`;
         };
 
-        // Cập nhật state
+        // Update state
         setStartDate(formatDate(defaultStartDate));
         setEndDate(formatDate(defaultEndDate));
-    }, []); // Chạy một lần khi component mount
+    }, []); // Run once on component mount
 
     useEffect(() => {
         const storedDoctorId = localStorage.getItem('doctor_id');
@@ -367,7 +367,7 @@ const DoctorDashboard = () => {
                                         <th>DPM</th>
                                         <th>PT Name</th>
                                         <th>PT Email</th>
-                                        <th>Appoint Date</th>
+                                        <th>APM Date</th>
                                         <th>Time</th>
                                         <th>Status</th>
                                         <th>Action</th>
@@ -399,6 +399,15 @@ const DoctorDashboard = () => {
                         )}
                     </div>
                     <div className="stats">
+                        <div className="card">
+                            <div className="card-content">
+                                <h4>Today's Appointments</h4>
+                                <h3>{todayAppointments.length}</h3>
+                                <button className="btn btn-primary" onClick={() => navigate('/todayappointments')}>
+                                    View Today's Appointments
+                                </button>
+                            </div>
+                        </div>
                         <div className="card">
                             <div className="card-content">
                                 <h4>Monthly Appointments</h4>
@@ -450,53 +459,53 @@ const DoctorDashboard = () => {
                         </div>
                     )}
                 </div>
-                {openEditDialog && (
-                    <div className="dialog">
-                        <div className="dialog-title">Edit Personal Information</div>
-                        <div className="dialog-content">
-                            <input
-                                type="email"
-                                name="doctor_email"
-                                placeholder="Email"
-                                value={editData.doctor_email}
-                                onChange={handleEditChange}
-                            />
-                            <input
-                                type="text"
-                                name="doctor_address"
-                                placeholder="Address"
-                                value={editData.doctor_address}
-                                onChange={handleEditChange}
-                            />
-                            <input
-                                type="password"
-                                name="current_password"
-                                placeholder="Current Password"
-                                value={editData.current_password}
-                                onChange={handleEditChange}
-                            />
-                            <input
-                                type="password"
-                                name="new_password"
-                                placeholder="New Password"
-                                value={editData.new_password}
-                                onChange={handleEditChange}
-                            />
-                            <input
-                                type="password"
-                                name="confirm_new_password"
-                                placeholder="Confirm New Password"
-                                value={editData.confirm_new_password}
-                                onChange={handleEditChange}
-                            />
-                        </div>
-                        <div className="dialog-actions">
-                            <button onClick={handleEditClose} className="btn btn-danger">Cancel</button>
-                            <button onClick={handleEditSubmit} className="btn btn-primary">Save</button>
-                        </div>
-                    </div>
-                )}
             </div>
+            {openEditDialog && (
+                <div className="dialog">
+                    <div className="dialog-title">Edit Personal Information</div>
+                    <div className="dialog-content">
+                        <input
+                            type="email"
+                            name="doctor_email"
+                            placeholder="Email"
+                            value={editData.doctor_email}
+                            onChange={handleEditChange}
+                        />
+                        <input
+                            type="text"
+                            name="doctor_address"
+                            placeholder="Address"
+                            value={editData.doctor_address}
+                            onChange={handleEditChange}
+                        />
+                        <input
+                            type="password"
+                            name="current_password"
+                            placeholder="Current Password"
+                            value={editData.current_password}
+                            onChange={handleEditChange}
+                        />
+                        <input
+                            type="password"
+                            name="new_password"
+                            placeholder="New Password"
+                            value={editData.new_password}
+                            onChange={handleEditChange}
+                        />
+                        <input
+                            type="password"
+                            name="confirm_new_password"
+                            placeholder="Confirm New Password"
+                            value={editData.confirm_new_password}
+                            onChange={handleEditChange}
+                        />
+                    </div>
+                    <div className="dialog-actions">
+                        <button onClick={handleEditClose} className="btn btn-danger">Cancel</button>
+                        <button onClick={handleEditSubmit} className="btn btn-primary">Save</button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

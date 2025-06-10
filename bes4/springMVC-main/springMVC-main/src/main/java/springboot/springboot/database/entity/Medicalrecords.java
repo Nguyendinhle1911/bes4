@@ -14,6 +14,7 @@ public class Medicalrecords extends Entity<Integer> {
     private Date follow_up_date;
     private Integer doctor_id;
 
+
     private List<Patients> patients;
     private List<Doctors> doctors;
     private BigDecimal severity;

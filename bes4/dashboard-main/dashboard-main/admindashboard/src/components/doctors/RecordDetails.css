@@ -1,80 +1,302 @@
-/* RecordDetails.css */
 .record-details-container {
-    padding: 20px;
-    max-width: 800px;
-    margin: 10vh auto;
-    background-color: #f9f9f9;
-    border-radius: 4px;
-    box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
+    padding: 40px;
+    max-width: 1200px;
+    margin: 2vh auto;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
     position: relative;
-    height: fit-content;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.7;
+}
+
+/* Header Section */
+.record-header {
+    background: linear-gradient(135deg, #004b91 0%,  #004b91 100%);
+    margin: -40px -40px 30px -40px;
+    padding: 30px 40px;
+    border-radius: 12px 12px 0 0;
+    color: white;
+    position: relative;
 }
 
 .record-details-container .record-title {
     text-align: center;
-    color: #004b91;
-    margin: 20px auto;
-    font-size: 30px;
-    font-weight: bold;
+    color: white;
+    margin: 0;
+    font-size: 32px;
+    font-weight: 600;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
+.recordID {
+    position: absolute;
+    top: 15px;
+    right: 40px;
+    font-size: 14px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.9);
+    background-color: rgba(255, 255, 255, 0.2);
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(10px);
+}
+
+/* Section Styling */
 .record-details-container section {
-    margin-bottom: 20px;
-    width: 100%;
+    margin-bottom: 35px;
+    background-color: #fafbfc;
+    border: 1px solid #e1e8ed;
+    border-radius: 8px;
+    padding: 25px;
+    transition: all 0.3s ease;
 }
 
-.record-details-container section h4{
+.record-details-container section h4 {
     color: #004b91;
+    font-weight: 700;
+    font-size: 22px;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 3px solid #004b91;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.section-icon {
+    width: 24px;
+    height: 24px;
+    background-color: #004b91;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 12px;
     font-weight: bold;
-    font-size: 20px;
-    margin-bottom: 10px;
 }
 
 .record-details-container p {
-    margin: 5px 0;
+    margin: 12px 0;
     font-size: 16px;
+    color: #333;
 }
 
 .record-details-container strong {
-    font-weight: bold;
+    font-weight: 600;
+    color: #1a1a1a;
+    min-width: 140px;
+    display: inline-block;
 }
 
-.patient-info-row{
+/* Patient Info Grid */
+.patient-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    margin-top: 15px;
+}
+
+.patient-info-item {
+    background-color: white;
+    padding: 15px;
+    border-radius: 6px;
+    border: 1px solid #e1e8ed;
     display: flex;
-    flex-direction: row;
-    gap: 20%;
+    align-items: center;
+    gap: 12px;
 }
 
-.notes-container, .prognosis-container{
-    background-color: #ffffff;
-    border: 1px solid rgba(0,0,0,0.3);
-    padding: 10px;
-    border-radius: 4px;
-    margin-bottom: 20px;
+.patient-info-icon {
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, #004b91, #0066cc);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
     font-size: 16px;
+    flex-shrink: 0;
 }
-.download-pdf-button{
+
+.patient-info-content {
+    flex: 1;
+}
+
+.patient-info-label {
+    font-size: 12px;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+}
+
+.patient-info-value {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+}
+
+/* Diagnosis Section */
+.diagnosis-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.diagnosis-item {
+    background-color: white;
+    padding: 15px;
+    border-radius: 6px;
+    border-left: 4px solid #004b91;
+}
+
+/* Medical Image */
+.medical-image-container {
+    margin-top: 20px;
+    text-align: center;
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    border: 2px dashed #ddd;
+}
+
+.medical-image-container img {
+    max-width: 100%;
+    max-height: 300px;
+    object-fit: contain;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Treatment Containers */
+.notes-container, .prognosis-container {
+    background-color: white;
+    border: 1px solid #e1e8ed;
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 15px;
+    font-size: 16px;
+    min-height: 100px;
+    line-height: 1.6;
+    position: relative;
+}
+
+.notes-container::before {
+    content: "📝";
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    font-size: 20px;
+    opacity: 0.3;
+}
+
+.prognosis-container::before {
+    content: "🏥";
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    font-size: 20px;
+    opacity: 0.3;
+}
+
+/* Download Button */
+.download-pdf-button {
     display: flex !important;
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    background-color: #b90000;
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
     border: none;
     outline: none;
-    padding: 10px;
-    border-radius: 4px;
+    padding: 16px 30px;
+    border-radius: 50px;
     color: white;
-    gap: 5px;
-    margin: 0 auto;
+    gap: 10px;
+    margin: 40px auto 0 auto;
+    font-size: 16px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 16px rgba(220, 38, 38, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
-.download-pdf-button:hover{
-    opacity: 0.8;
+.download-pdf-button:hover {
+    transform: translateY(-3px);
     cursor: pointer;
+    box-shadow: 0 8px 24px rgba(220, 38, 38, 0.4);
+    background: linear-gradient(135deg, #b91c1c 0%, #991b1b 100%);
 }
 
-.recordID{
-    position: absolute;
-    top: 20px;
-    right: 10px;
+.download-pdf-button:active {
+    transform: translateY(-1px);
+}
+
+/* Status Badge */
+.status-badge {
+    display: inline-block;
+    padding: 6px 12px;
+    background-color: #10b981;
+    color: white;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .record-details-container {
+        padding: 20px;
+        margin: 1vh 10px;
+    }
+    
+    .record-header {
+        margin: -20px -20px 20px -20px;
+        padding: 20px;
+    }
+    
+    .recordID {
+        position: static;
+        display: block;
+        text-align: center;
+        margin-top: 15px;
+        background-color: rgba(255, 255, 255, 0.3);
+    }
+    
+    .patient-info-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .diagnosis-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .record-details-container .record-title {
+        font-size: 24px;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .record-details-container {
+        box-shadow: none;
+        margin: 0;
+        padding: 20px;
+    }
+    
+    .download-pdf-button {
+        display: none !important;
+    }
+    
+    .record-header {
+        background: #004b91 !important;
+        -webkit-print-color-adjust: exact;
+    }
 }

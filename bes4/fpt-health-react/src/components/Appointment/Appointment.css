@@ -174,7 +174,7 @@ input[type="date"]{
 }
 
 .prev-step{
-    width: 100%;
+    width: 90%;
     padding: 10px;
     box-sizing: border-box;
     border-radius: 25px;
