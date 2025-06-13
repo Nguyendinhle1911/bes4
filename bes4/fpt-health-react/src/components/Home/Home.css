@@ -224,17 +224,17 @@
     border-radius: 25px;
 }
 
-.counter-div:hover {
+/* .counter-div:hover {
     border: none;
     cursor: pointer;
     scale: 1.15;
     transition: all 0.4s ease-in-out;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.6);
     background-color: #004b91;
-}
+} */
 
 .counter-div:hover .counter-number, .counter-div:hover .counter-text {
-    color: #ffffff;
+    color: #004b91;
     transition: all 0.3s ease-in-out;
 }
 
@@ -321,7 +321,6 @@
 
 .news-container h4 span {
     color: #004b91;
-
 }
 
 .news-content {
@@ -339,10 +338,13 @@
     width: 20%;
     display: flex;
     flex-direction: column;
-    height: 100%;
     justify-content: flex-start;
     align-items: flex-start;
     gap: 10px;
+    min-height: 500px; /* Tăng một chút cho đồng đều */
+    position: relative;
+    box-sizing: border-box;
+    padding-bottom: 10px; /* Để tránh dính sát đáy */
 }
 
 .news-item img {
@@ -350,7 +352,38 @@
     border-radius: 25px;
 }
 
+.news-title {
+    text-decoration: none;
+    color: #004b91;
+    font-size: 20px;
+}
+
+.news-title:hover {
+    text-decoration: underline;
+}
+
+.news-description {
+    color: rgba(0, 0, 0, 0.5);
+    font-size: 16px;
+
+    /* ✅ Thêm để đảm bảo cuộn khi quá dài */
+    flex-grow: 1;
+    overflow-y: auto;
+    max-height: 120px;
+}
+
+/* Tùy chọn: đẹp hơn cho thanh cuộn */
+.news-description::-webkit-scrollbar {
+    width: 6px;
+}
+
+.news-description::-webkit-scrollbar-thumb {
+    background-color: rgba(0,0,0,0.2);
+    border-radius: 3px;
+}
+
 .readMore {
+    margin-top: auto; /* ✅ Đẩy nút xuống đáy khối */
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -381,21 +414,6 @@
 .readMore:hover .arrow-right {
     border-bottom: 10px solid #004b91;
     transition: all 0.3s ease-in-out;
-}
-
-.news-title {
-    text-decoration: none;
-    color: #004b91;
-    font-size: 20px;
-}
-
-.news-title:hover {
-    text-decoration: underline;
-}
-
-.news-description {
-    color: rgba(0, 0, 0, 0.5);
-    font-size: 16px;
 }
 
 footer {

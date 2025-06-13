@@ -180,7 +180,7 @@ const MedicalRecords = () => {
                                     className="search-input"
                                 />
                                 {searchQuery && (
-                                    <button 
+                                    <button
                                         className="clear-search-1"
                                         onClick={() => {
                                             setSearchQuery('');
@@ -233,7 +233,7 @@ const MedicalRecords = () => {
                         <div className="no-results-icon">📄</div>
                         <h3>No medical records found</h3>
                         <p>
-                            {searchQuery 
+                            {searchQuery
                                 ? `No results found for "${searchQuery}"`
                                 : "No medical records have been created"
                             }
@@ -241,59 +241,62 @@ const MedicalRecords = () => {
                     </div>
                 ) : (
                     <>
-                        <div className="records-grid">
+                        <div className="records-list">
                             {currentRecords.map((record, index) => (
-                                <div key={record.record_id} className="record-card">
-                                    <div className="record-header">
-                                        <div className="record-id">
-                                            <span className="id-label">MR-</span>
-                                            <span className="id-number">{String(record.record_id).padStart(4, '0')}</span>
+                                <div key={record.record_id} className="record-item">
+                                    <div className="record-content">
+                                        <div className="record-header">
+                                            <div className="record-id">
+                                                <span className="id-label">MR-</span>
+                                                <span className="id-number">{String(record.record_id).padStart(4, '0')}</span>
+                                            </div>
+                                            <div
+                                                className="diagnosis-badge"
+                                                style={{ backgroundColor: getStatusColor(record.diagnosis) }}
+                                            >
+                                                {record.diagnosis}
+                                            </div>
                                         </div>
-                                        <div 
-                                            className="diagnosis-badge"
-                                            style={{ backgroundColor: getStatusColor(record.diagnosis) }}
-                                        >
-                                            {record.diagnosis}
-                                        </div>
-                                    </div>
-                                    
-                                    <div className="patient-info">
-                                        <div className="patient-avatar">
-                                            {record.patients[0]?.patient_name?.charAt(0)?.toUpperCase() || 'N'}
-                                        </div>
-                                        <div className="patient-details">
-                                            <h4 className="patient-name">
-                                                {record.patients[0]?.patient_name || 'N/A'}
-                                            </h4>
-                                            <p className="patient-email">
-                                                {record.patients[0]?.patient_email || 'N/A'}
-                                            </p>
-                                        </div>
-                                    </div>
 
-                                    <div className="record-info">
-                                        <div className="info-row">
-                                            <span className="info-icon">📅</span>
-                                            <span className="info-text">
-                                                {formatDate(record.follow_up_date)}
-                                            </span>
-                                        </div>
-                                        <div className="info-row">
-                                            <span className="info-icon">🩺</span>
-                                            <span className="info-text symptoms">
-                                                {record.symptoms}
-                                            </span>
-                                        </div>
-                                    </div>
+                                        <div className="record-body">
+                                            <div className="patient-info">
+                                                <div className="patient-avatar">
+                                                    {record.patients[0]?.patient_name?.charAt(0)?.toUpperCase() || 'N'}
+                                                </div>
+                                                <div className="patient-details">
+                                                    <h4 className="patient-name">
+                                                        {record.patients[0]?.patient_name || 'N/A'}
+                                                    </h4>
+                                                    <p className="patient-email">
+                                                        {record.patients[0]?.patient_email || 'N/A'}
+                                                    </p>
+                                                </div>
+                                            </div>
 
-                                    <div className="record-actions">
-                                        <button 
-                                            className="view-details-btn"
-                                            onClick={() => viewRecordDetails(record)}
-                                        >
-                                            <span className="btn-icon">👁️</span>
-                                            View Details
-                                        </button>
+                                            <div className="record-info">
+                                                <div className="info-row">
+                                                    <span className="info-icon">📅</span>
+                                                    <span className="info-text">
+                                                        {formatDate(record.follow_up_date)}
+                                                    </span>
+                                                </div>
+                                                <div className="info-row">
+                                                    <span className="info-icon">🩺</span>
+                                                    <span className="info-text symptoms">
+                                                        {record.symptoms}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="record-actions">
+                                            <button
+                                                className="view-details-btn"
+                                                onClick={() => viewRecordDetails(record)}
+                                            >
+                                                View Details
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             ))}
@@ -308,7 +311,7 @@ const MedicalRecords = () => {
                                 >
                                     Previous
                                 </button>
-                                
+
                                 {[...Array(totalPages)].map((_, index) => {
                                     const pageNumber = index + 1;
                                     if (
@@ -333,7 +336,7 @@ const MedicalRecords = () => {
                                     }
                                     return null;
                                 })}
-                                
+
                                 <button
                                     className="pagination-btn"
                                     onClick={() => handlePageChange(currentPage + 1)}

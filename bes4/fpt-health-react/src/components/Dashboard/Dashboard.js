@@ -678,33 +678,99 @@ function Dashboard() {
                                         <p>No records available.</p>
                                     )}
                                     {selectedRecord && (
-                                        <div className="record-details-popup">
-                                            <div className="record-details-overlay" onClick={() => setSelectedRecord(null)}></div>
+                                        <div className="record-details-popup" role="dialog" aria-labelledby="record-details-title">
+                                            <div
+                                                className="record-details-overlay"
+                                                onClick={() => setSelectedRecord(null)}
+                                                role="button"
+                                                aria-label="Close medical record details"
+                                                tabIndex={0}
+                                                onKeyDown={(e) => {
+                                                    if (e.key === 'Enter' || e.key === 'Escape') {
+                                                        setSelectedRecord(null);
+                                                    }
+                                                }}
+                                            ></div>
                                             <div className="record-details-content">
-                                                <h3>Medical Record Details</h3>
-                                                <p><strong>Record ID:</strong> {selectedRecord.record_id || 'N/A'}</p>
-                                                <p><strong>Follow-up Date:</strong> {selectedRecord.follow_up_date || 'N/A'}</p>
-                                                <p>
-                                                    <strong>Doctor:</strong>
-                                                    {selectedRecord.doctors && selectedRecord.doctors.length > 0
-                                                        ? selectedRecord.doctors[0].doctor_name
-                                                        : 'No information available'}
-                                                </p>
-                                                <p>
-                                                    <strong>Department:</strong>
-                                                    {selectedRecord.doctors && selectedRecord.doctors.length > 0
-                                                        ? getDepartmentName(selectedRecord.doctors[0].department_id)
-                                                        : 'No information available'}
-                                                </p>
-                                                <p><strong>Symptoms:</strong> {selectedRecord.symptoms || 'N/A'}</p>
-                                                <p><strong>Diagnosis:</strong> {selectedRecord.diagnosis || 'N/A'}</p>
-                                                {/* <p><strong>Test Results:</strong> {selectedRecord.test_results || 'N/A'}</p> */}
-                                                <p><strong>Prescription:</strong> {selectedRecord.prescription || 'N/A'}</p>
-                                                {/* <p><strong>Notes:</strong> {selectedRecord.notes || 'N/A'}</p> */}
-                                                <button className="close-button" onClick={() => setSelectedRecord(null)}>Close</button>
+                                                <div className="popup-header">
+                                                    <span className="popup-icon" role="img" aria-label="Medical record icon">📋</span>
+                                                    <h3 id="record-details-title">Medical Record Details</h3>
+                                                </div>
+                                                <div className="popup-body">
+                                                    <div className="detail-row">
+                                                        <span className="detail-label">Follow-up Date:</span>
+                                                        <span className="detail-value">
+                                                            {selectedRecord?.follow_up_date
+                                                                ? new Date(selectedRecord.follow_up_date).toLocaleDateString('en-US', {
+                                                                    year: 'numeric',
+                                                                    month: 'long',
+                                                                    day: 'numeric',
+                                                                })
+                                                                : 'N/A'}
+                                                        </span>
+                                                    </div>
+                                                    <div className="detail-row">
+                                                        <span className="detail-label">Doctor:</span>
+                                                        <span className="detail-value">
+                                                            {selectedRecord?.doctors && selectedRecord.doctors.length > 0
+                                                                ? selectedRecord.doctors[0].doctor_name
+                                                                : 'No information available'}
+                                                        </span>
+                                                    </div>
+                                                    <div className="detail-row">
+                                                        <span className="detail-label">Department:</span>
+                                                        <span className="detail-value">
+                                                            {selectedRecord?.doctors && selectedRecord.doctors.length > 0
+                                                                ? getDepartmentName(selectedRecord.doctors[0].department_id)
+                                                                : 'No information available'}
+                                                        </span>
+                                                    </div>
+                                                    <div className="detail-row">
+                                                        <span className="detail-label">Symptoms:</span>
+                                                        <span className="detail-value">{selectedRecord?.symptoms || 'N/A'}</span>
+                                                    </div>
+                                                    <div className="detail-row">
+                                                        <span className="detail-label">Diagnosis:</span>
+                                                        <span className="detail-value">{selectedRecord?.diagnosis || 'N/A'}</span>
+                                                    </div>
+                                                    <div className="detail-row">
+                                                        <span className="detail-label">Prescription:</span>
+                                                        <span className="detail-value">{selectedRecord?.prescription || 'N/A'}</span>
+                                                    </div>
+                                                    {selectedRecord?.image && (
+                                                        <div className="image-container">
+                                                            <img
+                                                                src={selectedRecord.image}
+                                                                alt="Medical record scan"
+                                                                className="record-image"
+                                                                onError={(e) => (e.target.src = 'https://via.placeholder.com/300x200?text=No+Image+Available')}
+                                                                loading="lazy"
+                                                            />
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                <div className="popup-footer">
+                                                    {selectedRecord?.image && (
+                                                        <a
+                                                            href={selectedRecord.image}
+                                                            download
+                                                            className="action-button"
+                                                            aria-label="Download medical record image"
+                                                        >
+                                                            Download Image
+                                                        </a>
+                                                    )}
+                                                    {/* <button
+                                                        className="action-button"
+                                                        onClick={() => setSelectedRecord(null)}
+                                                        aria-label="Close medical record details"
+                                                        autoFocus
+                                                    >
+                                                        Close
+                                                    </button> */}
+                                                </div>
                                             </div>
                                         </div>
-
                                     )}
                                     <div className="pagination-controls">
                                         <a

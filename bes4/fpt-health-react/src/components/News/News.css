@@ -101,11 +101,6 @@
     transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out, border-color 0.3s ease-in-out;
 }
 
-.news-item-v1:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
-    border-color: #004b91;
-}
 
 .news-image-v1 {
     width: 100%;

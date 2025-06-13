@@ -5,10 +5,26 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import './StaffDashboard.css';
 
 const StaffDashboard = () => {
+    // Tính toán ngày mặc định
+    const getDefaultDates = () => {
+        const today = new Date();
+        const startDate = today.toISOString().split('T')[0]; // Ngày hôm nay
+        
+        const endDate = new Date(today);
+        endDate.setDate(today.getDate() + 15); // Thêm 15 ngày
+        
+        return {
+            start: startDate,
+            end: endDate.toISOString().split('T')[0]
+        };
+    };
+
+    const defaultDates = getDefaultDates();
+    
     const [searchResults, setSearchResults] = useState([]);
     const [upcomingAppointments, setUpcomingAppointments] = useState([]);
-    const [startDate, setStartDate] = useState('');
-    const [endDate, setEndDate] = useState('');
+    const [startDate, setStartDate] = useState(defaultDates.start);
+    const [endDate, setEndDate] = useState(defaultDates.end);
     const [statusFilter, setStatusFilter] = useState('');
     const [error, setError] = useState('');
     const [editItem, setEditItem] = useState(null);
@@ -21,6 +37,7 @@ const StaffDashboard = () => {
         setStatusFilter(status);
         fetchAppointments();
     }, [location.search]);
+
     const formatTimeSlot = (slot) => {
         switch (slot) {
             case 1:
@@ -119,7 +136,6 @@ const StaffDashboard = () => {
         const staff = staffs.find(sta => sta.staff_id === staffId);
         return staff ? staff.staff_name : 'Unknown Staff';
     };
-
 
     const handleStatusChange = (event) => {
         setStatusFilter(event.target.value);

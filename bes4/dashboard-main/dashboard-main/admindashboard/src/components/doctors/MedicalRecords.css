@@ -53,7 +53,65 @@
     display: flex;
     align-items: center;
     background: #ffffff;
-    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+
+}
+.medical-records {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.content {
+    flex: 1;
+    padding: 2rem;
+    overflow-y: auto;
+    background: rgba(255, 255, 255, 0.94);
+    backdrop-filter: blur(12px);
+}
+
+/* Header Section */
+.header-section {
+    margin-bottom: 2rem;
+}
+
+.page-title {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: #1a202c;
+    font-size: 2.25rem;
+    font-weight: 800;
+    margin: 0 0 1.5rem 0;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.title-icon {
+    font-size: 2rem;
+    color: #4c51bf;
+}
+
+.controls-stats-container {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.search-container-v1 {
+    flex: 2 1;
+    max-width: 400px;
+    display: flex;
+    gap: 10px;
+}
+
+.search-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: #ffffff;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease;
 }
@@ -66,7 +124,6 @@
     width: 100%;
     padding: 0.9rem 1rem 0.9rem 1rem;
     border: none;
-    border-radius: 12px;
     font-size: 1rem;
     color: #2d3748;
     background: transparent;
@@ -92,7 +149,6 @@
     color: #718096;
     cursor: pointer;
     padding: 0.3rem;
-    border-radius: 50%;
     transition: all 0.2s ease;
 }
 
@@ -122,7 +178,6 @@
 .sort-btn {
     padding: 0.5rem 1rem;
     border: 1px solid #e2e8f0;
-    border-radius: 8px;
     background: #ffffff;
     color: #2d3748;
     font-size: 0.9rem;
@@ -150,9 +205,8 @@
 }
 
 .stat-card {
-    background: linear-gradient(145deg,  #004B91,  #004B91);
+    background: linear-gradient(145deg, #004B91, #004B91);
     border: 1px solid rgba(0, 0, 0, 0.1);
-    border-radius: 12px;
     padding: 0.75rem 1rem;
     text-align: center;
     color: #ffffff;
@@ -177,17 +231,16 @@
     color: #ffffff;
 }
 
-/* Records Grid */
-.records-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+/* Records List */
+.records-list {
+    display: flex;
+    flex-direction: column;
     gap: 1.5rem;
     margin-bottom: 2rem;
 }
 
-.record-card {
+.record-item {
     background: #ffffff;
-    border-radius: 12px;
     padding: 1.5rem;
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease;
@@ -196,7 +249,7 @@
     overflow: hidden;
 }
 
-.record-card::before {
+.record-item::before {
     content: '';
     position: absolute;
     top: 0;
@@ -205,12 +258,6 @@
     height: 4px;
     background: linear-gradient(90deg, #4c51bf, #7f9cf5);
 }
-
-.record-card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
-}
-
 .record-header {
     display: flex;
     justify-content: space-between;
@@ -222,41 +269,43 @@
     display: flex;
     align-items: center;
     font-weight: 700;
-    color: #ffffff;
+    color:rgb(255, 255, 255);
 }
 
 .id-label {
-    color: #ffffff;
+    color:rgb(255, 255, 255);
     font-size: 0.9rem;
 }
 
 .id-number {
     font-size: 1rem;
-    color: #ffffff;
+    color:rgb(255, 255, 255);
 }
 
 .diagnosis-badge {
     padding: 0.4rem 0.8rem;
-    border-radius: 16px;
     font-size: 0.8rem;
     font-weight: 600;
     color: #2d3748;
     border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+.record-body {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 1rem;
 }
 
 .patient-info {
     display: flex;
     align-items: center;
     gap: 1rem;
-    margin-bottom: 1.5rem;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid #edf2f7;
 }
 
 .patient-avatar {
     width: 48px;
     height: 48px;
-    border-radius: 50%;
     background: linear-gradient(135deg, #4c51bf, #7f9cf5);
     display: flex;
     align-items: center;
@@ -265,6 +314,7 @@
     font-weight: 700;
     font-size: 1.2rem;
     flex-shrink: 0;
+    border-radius: 50%;
 }
 
 .patient-details {
@@ -285,7 +335,7 @@
 }
 
 .record-info {
-    margin-bottom: 4rem;
+    flex: 1;
 }
 
 .info-row {
@@ -317,9 +367,8 @@
 }
 
 .record-actions {
-    position: absolute;
-    bottom: 1rem;
-    right: 1rem;
+    display: flex;
+    justify-content: flex-end;
 }
 
 .view-details-btn {
@@ -327,15 +376,15 @@
     align-items: center;
     gap: 0.5rem;
     padding: 0.6rem 1.2rem;
-    background: linear-gradient(135deg, #4c51bf, #7f9cf5);
+    background: linear-gradient(135deg, #4c51bf,rgb(28, 81, 240));
     color: white;
     border: none;
-    border-radius: 8px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
     font-size: 0.9rem;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
 }
 
 .view-details-btn:hover {
@@ -359,7 +408,6 @@
 .pagination-btn {
     padding: 0.6rem 1rem;
     border: 1px solid #e2e8f0;
-    border-radius: 8px;
     background: #ffffff;
     color: #2d3748;
     cursor: pointer;
@@ -405,7 +453,6 @@
     height: 48px;
     border: 4px solid rgba(0, 0, 0, 0.1);
     border-top: 4px solid #4c51bf;
-    border-radius: 50%;
     animation: spin 1s linear infinite;
     margin-bottom: 1rem;
 }
@@ -437,7 +484,6 @@
     background: #4c51bf;
     color: white;
     border: none;
-    border-radius: 8px;
     cursor: pointer;
     transition: all 0.3s ease;
     font-weight: 600;
@@ -492,17 +538,12 @@
         gap: 1rem;
     }
     
-    .search-container,
+    .search-container-v1,
     .sort-container,
     .stats-container {
         flex: none;
         width: 100%;
         max-width: none;
-    }
-    
-    .records-grid {
-        grid-template-columns: 1fr;
-        gap: 1rem;
     }
     
     .stat-card {
@@ -512,13 +553,12 @@
 }
 
 @media (max-width: 480px) {
-    .record-card {
+    .record-item {
         padding: 1rem;
     }
     
-    .patient-info {
+    .record-body {
         flex-direction: column;
-        text-align: center;
         gap: 0.75rem;
     }
     
