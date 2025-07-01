@@ -293,35 +293,9 @@ function Header() {
     };
 
 
-    const generateRandomPassword = () => {
-        const length = 8;
-        const lowercaseCharset = 'abcdefghijklmnopqrstuvwxyz';
-        const uppercaseCharset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        const numericCharset = '0123456789';
-        const specialCharset = '!@#$%^&*()_+';
-        let password =
-            lowercaseCharset[Math.floor(Math.random() * lowercaseCharset.length)] +
-            uppercaseCharset[Math.floor(Math.random() * uppercaseCharset.length)] +
-            numericCharset[Math.floor(Math.random() * numericCharset.length)] +
-            specialCharset[Math.floor(Math.random() * specialCharset.length)];
-        for (let i = 4; i < length; i++) {
-            const charset = lowercaseCharset + uppercaseCharset + numericCharset + specialCharset;
-            const randomIndex = Math.floor(Math.random() * charset.length);
-            password += charset[randomIndex];
-        }
 
-        password = shuffleString(password);
-        return password;
-    };
 
-    function shuffleString(str) {
-        const array = str.split('');
-        for (let i = array.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [array[i], array[j]] = [array[j], array[i]];
-        }
-        return array.join('');
-    }
+
 
     const handleSuccessFacebook = async (response) => {
         try {
@@ -458,6 +432,102 @@ function Header() {
     }, [cooldown]);
 
     console.log('Render - isLoggedIn:', isLoggedIn, 'username:', username);
+
+ const handleSuccessGoogle = async (credentialResponse) => {
+    try {
+        // Lấy token từ Google
+        const { credential } = credentialResponse;
+        const decoded = jwtDecode(credential);
+
+        console.log('Google login data:', {
+            email: decoded.email,
+            name: decoded.name
+        });
+
+        // Gửi request với key names khớp với backend
+        const response = await axios.post('http://localhost:8081/api/v1/patients/google-login', {
+            patient_email: decoded.email,    // ✅ Khớp với backend: request.get("patient_email")
+            patient_name: decoded.name,      // ✅ Khớp với backend: request.get("patient_name")
+            patient_password: "Password123!" // ✅ Khớp với backend: request.get("patient_password")
+        });
+
+        console.log('Backend response:', response.data);
+
+        // Backend trả về patient_name và patient_id
+        const { patient_name, patient_id } = response.data;
+        
+        // ✅ Xử lý trường hợp patient_id null (tài khoản mới tạo)
+        if (patient_name) {
+            if (patient_id === null || patient_id === undefined) {
+                // Tài khoản mới được tạo nhưng chưa có ID
+                // Thử login lại để lấy ID
+                console.log('Account created but no ID, trying to login again...');
+                
+                // Gọi lại API sau 1 giây để backend kịp xử lý
+                setTimeout(async () => {
+                    try {
+                        const retryResponse = await axios.post('http://localhost:8081/api/v1/patients/google-login', {
+                            patient_email: decoded.email,
+                            patient_name: decoded.name,
+                            patient_password: "Password123!"
+                        });
+                        
+                        const { patient_name: retryName, patient_id: retryId } = retryResponse.data;
+                        
+                        if (retryName && retryId) {
+                            setIsLoggedIn(true);
+                            setPatientId(retryId);
+                            sessionStorage.setItem('username', retryName);
+                            sessionStorage.setItem('patient_id', retryId);
+                            setUsername(retryName);
+                            toggleLoginVisibility();
+                            setAlertMess('Sign in successfully!');
+                            setTimeout(() => setAlertMess(''), 2000);
+                        } else {
+                            // Vẫn không có ID, nhưng cho phép login với thông tin cơ bản
+                            setIsLoggedIn(true);
+                            setPatientId(null);
+                            sessionStorage.setItem('username', retryName || patient_name);
+                            sessionStorage.removeItem('patient_id'); // Xóa patient_id cũ nếu có
+                            setUsername(retryName || patient_name);
+                            toggleLoginVisibility();
+                            setAlertMess('Sign in successfully!');
+                            setTimeout(() => setAlertMess(''), 2000);
+                        }
+                    } catch (retryError) {
+                        console.error('Retry login failed:', retryError);
+                        // Fallback: cho phép login với thông tin hiện tại
+                        setIsLoggedIn(true);
+                        setPatientId(null);
+                        sessionStorage.setItem('username', patient_name);
+                        sessionStorage.removeItem('patient_id');
+                        setUsername(patient_name);
+                        toggleLoginVisibility();
+                        setAlertMess('Sign in successfully!');
+                        setTimeout(() => setAlertMess(''), 2000);
+                    }
+                }, 1000);
+            } else {
+                // Tài khoản đã tồn tại và có ID
+                setIsLoggedIn(true);
+                setPatientId(patient_id);
+                sessionStorage.setItem('username', patient_name);
+                sessionStorage.setItem('patient_id', patient_id);
+                setUsername(patient_name);
+                toggleLoginVisibility();
+                setAlertMess('Sign in successfully!');
+                setTimeout(() => setAlertMess(''), 2000);
+            }
+        } else {
+            setAlertMess('Sign in failed!');
+            setTimeout(() => setAlertMess(''), 2000);
+        }
+    } catch (error) {
+        console.error('Error during Google login:', error);
+        setAlertMess('Sign in failed!');
+        setTimeout(() => setAlertMess(''), 2000);
+    }
+};
 
     return (
         <header id="header" className={`${isFixed ? 'fixed' : ''}`}>

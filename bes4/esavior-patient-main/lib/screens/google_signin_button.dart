@@ -34,8 +34,21 @@ class GoogleSignInButton extends StatelessWidget {
           String? patientId = data['patient_id']?.toString();
           String? patientName = data['patient_name'];
 
-          if (patientId != null && patientName != null) {
-            int parsedPatientId = int.tryParse(patientId) ?? 0; // Chuyển đổi sang int
+          // Kiểm tra nếu patient_id là null (tài khoản mới được tạo)
+          if (patientId == null || patientId == 'null') {
+            // Thử đăng nhập lại để lấy patient_id
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Tài khoản đã được tạo. Đang đăng nhập...')),
+            );
+
+            // Gọi lại API để lấy thông tin user vừa tạo
+            await Future.delayed(Duration(milliseconds: 500)); // Đợi 500ms
+            await _retryLogin(context, googleUser);
+            return;
+          }
+
+          if (patientName != null) {
+            int parsedPatientId = int.tryParse(patientId) ?? 0;
             if (parsedPatientId > 0) {
               SharedPreferences prefs = await SharedPreferences.getInstance();
               await prefs.setInt('patient_id', parsedPatientId);
@@ -45,30 +58,29 @@ class GoogleSignInButton extends StatelessWidget {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(
-                    'Logged in successfully via Google\nAccount: ${googleUser.email}',
+                    'Đăng nhập thành công qua Google\nTài khoản: ${googleUser.email}',
                   ),
                 ),
               );
-              // Không cần điều hướng thủ công
             } else {
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Invalid patient_id from server')),
+                SnackBar(content: Text('Patient ID không hợp lệ từ server')),
               );
             }
           } else {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Invalid response from server')),
+              SnackBar(content: Text('Phản hồi không hợp lệ từ server')),
             );
           }
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Login failed, try again.')),
+            SnackBar(content: Text('Đăng nhập thất bại, vui lòng thử lại.')),
           );
         }
       }
     } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Login failed: $error')),
+        SnackBar(content: Text('Đăng nhập thất bại: $error')),
       );
       print('Google sign-in error: $error');
     }
@@ -78,7 +90,61 @@ class GoogleSignInButton extends StatelessWidget {
     // Hàm này sẽ tạo một mật khẩu ngẫu nhiên
     return 'Password123@!'; // Thay bằng logic tạo mật khẩu ngẫu nhiên thực tế nếu cần
   }
+  Future<void> _retryLogin(BuildContext context, GoogleSignInAccount googleUser) async {
+    try {
+      String randomPassword = _generateRandomPassword();
+      final response = await http.post(
+        Uri.parse('http://10.0.2.2:8081/api/v1/patients/google-login'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'patient_name': googleUser.displayName ?? 'No name',
+          'patient_email': googleUser.email,
+          'patient_password': randomPassword,
+        }),
+      );
 
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        String? patientId = data['patient_id']?.toString();
+        String? patientName = data['patient_name'];
+
+        if (patientId != null && patientId != 'null' && patientName != null) {
+          int parsedPatientId = int.tryParse(patientId) ?? 0;
+          if (parsedPatientId > 0) {
+            SharedPreferences prefs = await SharedPreferences.getInstance();
+            await prefs.setInt('patient_id', parsedPatientId);
+            await prefs.setBool('isLoggedIn', true);
+
+            onLoginSuccess(patientName, patientId);
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  'Đăng nhập thành công qua Google\nTài khoản: ${googleUser.email}',
+                ),
+              ),
+            );
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Patient ID không hợp lệ từ server')),
+            );
+          }
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Không thể lấy thông tin tài khoản. Vui lòng thử lại.')),
+          );
+        }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Đăng nhập thất bại, vui lòng thử lại.')),
+        );
+      }
+    } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Lỗi khi thử đăng nhập lại: $error')),
+      );
+      print('Retry login error: $error');
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return ElevatedButton.icon(
