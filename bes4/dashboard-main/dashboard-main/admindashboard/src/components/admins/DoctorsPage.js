@@ -149,7 +149,7 @@ const DoctorsPage = () => {
                                 <div className="department-card" onClick={() => handleDepartmentClick(department)}>
                                     <div className="accordion-summary">
                                         <h6>{department.department_name}</h6>
-                                        <span><img width="30" height="30" src="https://img.icons8.com/ios/50/004b91/view-file.png" alt="view-file"/></span>
+                                        {/* <span><img width="30" height="30" src="https://img.icons8.com/ios/50/004b91/view-file.png" alt="view-file"/></span> */}
                                     </div>
                                 </div>
                             </div>

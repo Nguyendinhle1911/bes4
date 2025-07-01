@@ -16,10 +16,6 @@ const MedicalRecords = () => {
 
     const navigate = useNavigate();
 
-    const viewRecordDetails = (record) => {
-        navigate('/record-details', { state: { record } });
-    };
-
     useEffect(() => {
         const fetchMedicalRecords = async () => {
             try {
@@ -43,21 +39,42 @@ const MedicalRecords = () => {
         fetchMedicalRecords();
     }, []);
 
-    const filteredMedicalRecords = medicalRecords.filter(record =>
-        record.patients[0]?.patient_name.toLowerCase().includes(searchQuery.toLowerCase())
+    // Group records by patient_email
+    const groupedRecords = medicalRecords.reduce((acc, record) => {
+        const email = record.patients[0]?.patient_email || 'N/A';
+        if (!acc[email]) {
+            acc[email] = {
+                patient_name: record.patients[0]?.patient_name || 'N/A',
+                patient_email: email,
+                records: [],
+            };
+        }
+        acc[email].records.push(record);
+        return acc;
+    }, {});
+
+    // Convert grouped records to array for filtering and sorting
+    const groupedRecordsArray = Object.values(groupedRecords).filter(group =>
+        group.patient_name.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
-    const sortedRecords = [...filteredMedicalRecords].sort((a, b) => {
+    const sortedRecords = [...groupedRecordsArray].sort((a, b) => {
         let comparison = 0;
         switch (sortBy) {
             case 'date':
-                comparison = new Date(a.follow_up_date) - new Date(b.follow_up_date);
+                // Sort by the most recent follow_up_date in the group
+                const dateA = Math.max(...a.records.map(r => new Date(r.follow_up_date)));
+                const dateB = Math.max(...b.records.map(r => new Date(r.follow_up_date)));
+                comparison = dateA - dateB;
                 break;
             case 'name':
-                comparison = (a.patients[0]?.patient_name || '').localeCompare(b.patients[0]?.patient_name || '');
+                comparison = a.patient_name.localeCompare(b.patient_name);
                 break;
             case 'id':
-                comparison = a.record_id - b.record_id;
+                // Sort by the lowest record_id in the group
+                const idA = Math.min(...a.records.map(r => r.record_id));
+                const idB = Math.min(...b.records.map(r => r.record_id));
+                comparison = idA - idB;
                 break;
             default:
                 comparison = 0;
@@ -111,6 +128,10 @@ const MedicalRecords = () => {
             return a & a;
         }, 0);
         return colors[Math.abs(hash) % colors.length];
+    };
+
+    const viewRecordDetails = (group) => {
+        navigate('/record-details', { state: { records: group.records } });
     };
 
     if (loading) {
@@ -217,11 +238,11 @@ const MedicalRecords = () => {
                         </div>
                         <div className="stats-container">
                             <div className="stat-card">
-                                <div className="stat-number">{medicalRecords.length}</div>
-                                <div className="stat-label">Total Records</div>
+                                <div className="stat-number">{Object.keys(groupedRecords).length}</div>
+                                <div className="stat-label">Total Patients</div>
                             </div>
                             <div className="stat-card">
-                                <div className="stat-number">{filteredMedicalRecords.length}</div>
+                                <div className="stat-number">{groupedRecordsArray.length}</div>
                                 <div className="stat-label">Search Results</div>
                             </div>
                         </div>
@@ -235,41 +256,36 @@ const MedicalRecords = () => {
                         <p>
                             {searchQuery
                                 ? `No results found for "${searchQuery}"`
-                                : "No medical records have been created"
-                            }
+                                : "No medical records have been created"}
                         </p>
                     </div>
                 ) : (
                     <>
                         <div className="records-list">
-                            {currentRecords.map((record, index) => (
-                                <div key={record.record_id} className="record-item">
+                            {currentRecords.map((group, index) => (
+                                <div key={group.patient_email} className="record-item">
                                     <div className="record-content">
                                         <div className="record-header">
                                             <div className="record-id">
-                                                <span className="id-label">MR-</span>
-                                                <span className="id-number">{String(record.record_id).padStart(4, '0')}</span>
+                                                <span className="id-label">Patient Email   </span>
+                                                <span className="id-number">: {group.patient_email}</span>
                                             </div>
                                             <div
                                                 className="diagnosis-badge"
-                                                style={{ backgroundColor: getStatusColor(record.diagnosis) }}
+                                                style={{ backgroundColor: getStatusColor(group.records[0]?.diagnosis || 'N/A') }}
                                             >
-                                                {record.diagnosis}
+                                                {group.records.length} Record{group.records.length > 1 ? 's' : ''}
                                             </div>
                                         </div>
 
                                         <div className="record-body">
                                             <div className="patient-info">
                                                 <div className="patient-avatar">
-                                                    {record.patients[0]?.patient_name?.charAt(0)?.toUpperCase() || 'N'}
+                                                    {group.patient_name.charAt(0).toUpperCase()}
                                                 </div>
                                                 <div className="patient-details">
-                                                    <h4 className="patient-name">
-                                                        {record.patients[0]?.patient_name || 'N/A'}
-                                                    </h4>
-                                                    <p className="patient-email">
-                                                        {record.patients[0]?.patient_email || 'N/A'}
-                                                    </p>
+                                                    <h4 className="patient-name">{group.patient_name}</h4>
+                                                    <p className="patient-email">{group.patient_email}</p>
                                                 </div>
                                             </div>
 
@@ -277,13 +293,13 @@ const MedicalRecords = () => {
                                                 <div className="info-row">
                                                     <span className="info-icon">📅</span>
                                                     <span className="info-text">
-                                                        {formatDate(record.follow_up_date)}
+                                                        Latest: {formatDate(group.records[0]?.follow_up_date || 'N/A')}
                                                     </span>
                                                 </div>
                                                 <div className="info-row">
                                                     <span className="info-icon">🩺</span>
                                                     <span className="info-text symptoms">
-                                                        {record.symptoms}
+                                                        {group.records[0]?.symptoms || 'N/A'}
                                                     </span>
                                                 </div>
                                             </div>
@@ -292,7 +308,7 @@ const MedicalRecords = () => {
                                         <div className="record-actions">
                                             <button
                                                 className="view-details-btn"
-                                                onClick={() => viewRecordDetails(record)}
+                                                onClick={() => viewRecordDetails(group)}
                                             >
                                                 View Details
                                             </button>

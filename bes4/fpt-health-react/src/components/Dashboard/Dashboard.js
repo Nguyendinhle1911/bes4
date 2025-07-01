@@ -19,6 +19,7 @@ function Dashboard() {
     const [bookedSlots, setBookedSlots] = useState([]);
     const [availableSlots, setAvailableSlots] = useState([]);
     const [selectedRecord, setSelectedRecord] = useState(null);
+    const [selectedAppointment, setSelectedAppointment] = useState(null);
 
     const toggleAppointmentVisible = () => {
         setAppointmentVisible(!appointmentVisible);
@@ -91,7 +92,6 @@ function Dashboard() {
                     const lockedSlots = response.data;
                     const available = timeSlots.filter(slot => !lockedSlots.includes(slot.value));
                     setAvailableSlots(available);
-                    // Reset formData.timeSlot if it's no longer available
                     if (!available.find(slot => slot.value === formData.timeSlot)) {
                         setFormData({
                             ...formData,
@@ -104,7 +104,6 @@ function Dashboard() {
                 });
         }
     }, [formData.date]);
-
 
     useEffect(() => {
         if (formData.date && bookedSlots.length > 0) {
@@ -128,11 +127,14 @@ function Dashboard() {
     };
 
     const handleViewDetails = (record) => {
-        setSelectedRecord(record); // Lưu hồ sơ được chọn
+        setSelectedRecord(record);
+    };
+
+    const handleViewAppointmentDetails = (appointment) => {
+        setSelectedAppointment(appointment);
     };
 
     const handleTimeSlotChange = (slot) => {
-        // Check and lock the selected slot
         axios.post('http://localhost:8081/api/v1/appointments/lock-slot', {
             doctorId: editAppointmentData.doctor_id,
             date: formData.date,
@@ -143,7 +145,6 @@ function Dashboard() {
                 timeSlot: slot
             });
 
-            // Schedule to release lock after 5 minutes if not confirmed
             setTimeout(() => {
                 axios.post('http://localhost:8081/api/v1/appointments/unlock-slot', {
                     doctorId: formData.doctor,
@@ -304,7 +305,6 @@ function Dashboard() {
     const totalRecordPages = Math.ceil(medicalRecords.length / itemsPerPage);
     const startRecordIndex = (currentRecordPage - 1) * itemsPerPage;
     const currentRecords = sortedMedicalRecords.slice(startRecordIndex, startRecordIndex + itemsPerPage);
-
 
     const handleImageChange = async (e) => {
         const file = e.target.files[0];
@@ -591,19 +591,20 @@ function Dashboard() {
                                                     <strong>Department:</strong> {app.doctor && app.doctor.length > 0 && app.doctor[0].department && app.doctor[0].department.length > 0 ? app.doctor[0].department[0].department_name : 'N/A'}
                                                 </p>
                                                 <p>
-                                                    <strong>Staff
-                                                        Name:</strong> {app.staff && app.staff.length > 0 ? app.staff[0].staff_name : 'N/A'}
+                                                    <strong>Staff Name:</strong> {app.staff && app.staff.length > 0 ? app.staff[0].staff_name : 'N/A'}
                                                 </p>
                                                 <p>
-                                                    <strong>Appointment
-                                                        Date:</strong> {new Date(app.medical_day).toLocaleDateString()}
+                                                    <strong>Appointment Date:</strong> {new Date(app.medical_day).toLocaleDateString()}
                                                 </p>
                                                 <p>
                                                     <strong>Appointment Time:</strong> {formatTimeSlot(app.slot)}
                                                 </p>
-                                                {app.status !== 'Cancelled' && app.status !== 'Completed' && (
-                                                    <>
-                                                        <div className="appointment-action">
+                                                <div className="appointment-action">
+                                                    <button className="record-detail-button" onClick={() => handleViewAppointmentDetails(app)}>
+                                                        Xem chi tiết
+                                                    </button>
+                                                    {app.status !== 'Cancelled' && app.status !== 'Completed' && (
+                                                        <>
                                                             <button className="edit-appointment-button"
                                                                 onClick={() => handleOpenEditAppointment(app)}
                                                                 disabled={isEditCancelDisabled(app.medical_day, formatTimeSlot(app.slot))}>Edit
@@ -611,13 +612,107 @@ function Dashboard() {
                                                             <button className="cancel-appointment-button"
                                                                 disabled={isEditCancelDisabled(app.medical_day, formatTimeSlot(app.slot))}>Cancel
                                                             </button>
-                                                        </div>
-                                                    </>
-                                                )}
+                                                        </>
+                                                    )}
+                                                </div>
                                             </div>
                                         ))
                                     ) : (
                                         <p>No appointments available.</p>
+                                    )}
+                                    {selectedAppointment && (
+                                        <div className="record-details-popup" role="dialog" aria-labelledby="appointment-details-title">
+                                            <div
+                                                className="record-details-overlay"
+                                                onClick={() => setSelectedAppointment(null)}
+                                                role="button"
+                                                aria-label="Close appointment details"
+                                                tabIndex={0}
+                                                onKeyDown={(e) => {
+                                                    if (e.key === 'Enter' || e.key === 'Escape') {
+                                                        setSelectedAppointment(null);
+                                                    }
+                                                }}
+                                            ></div>
+                                            <div className="record-details-content">
+                                                <div className="popup-header">
+                                                    <span className="popup-icon" role="img" aria-label="Appointment icon">📅</span>
+                                                    <h3 id="appointment-details-title">Appointment Details</h3>
+                                                </div>
+                                                <div className="popup-body">
+                                                    <div className="detail-row">
+                                                        <span className="detail-label">Patient Name:</span>
+                                                        <span className="detail-value">{patientData?.patient_name || 'N/A'}</span>
+                                                    </div>
+                                                    <div className="detail-row">
+                                                        <span className="detail-label">Booking Date:</span>
+                                                        <span className="detail-value">
+                                                            {selectedAppointment?.appointment_date
+                                                                ? new Date(selectedAppointment.appointment_date).toLocaleDateString('en-US', {
+                                                                    year: 'numeric',
+                                                                    month: 'long',
+                                                                    day: 'numeric',
+                                                                })
+                                                                : 'N/A'}
+                                                        </span>
+                                                    </div>
+                                                    <div className="detail-row">
+                                                        <span className="detail-label">Appointment Date:</span>
+                                                        <span className="detail-value">
+                                                            {selectedAppointment?.medical_day
+                                                                ? new Date(selectedAppointment.medical_day).toLocaleDateString('en-US', {
+                                                                    year: 'numeric',
+                                                                    month: 'long',
+                                                                    day: 'numeric',
+                                                                })
+                                                                : 'N/A'}
+                                                        </span>
+                                                    </div>
+                                                    <div className="detail-row">
+                                                        <span className="detail-label">Appointment Time:</span>
+                                                        <span className="detail-value">{formatTimeSlot(selectedAppointment?.slot) || 'N/A'}</span>
+                                                    </div>
+                                                    <div className="detail-row">
+                                                        <span className="detail-label">Doctor:</span>
+                                                        <span className="detail-value">
+                                                            {selectedAppointment?.doctor && selectedAppointment.doctor.length > 0
+                                                                ? selectedAppointment.doctor[0].doctor_name
+                                                                : 'No information available'}
+                                                        </span>
+                                                    </div>
+                                                    <div className="detail-row">
+                                                        <span className="detail-label">Department:</span>
+                                                        <span className="detail-value">
+                                                            {selectedAppointment?.doctor && selectedAppointment.doctor.length > 0
+                                                                ? getDepartmentName(selectedAppointment.doctor[0].doctor_id)
+                                                                : 'No information available'}
+                                                        </span>
+                                                    </div>
+                                                    <div className="detail-row">
+                                                        <span className="detail-label">Staff Name:</span>
+                                                        <span className="detail-value">
+                                                            {selectedAppointment?.staff && selectedAppointment.staff.length > 0
+                                                                ? selectedAppointment.staff[0].staff_name
+                                                                : 'No information available'}
+                                                        </span>
+                                                    </div>
+                                                    <div className="detail-row">
+                                                        <span className="detail-label">Status:</span>
+                                                        <span className="detail-value">{selectedAppointment?.status || 'N/A'}</span>
+                                                    </div>
+                                                </div>
+                                                <div className="popup-footer">
+                                                    <button
+                                                        className="action-button"
+                                                        onClick={() => setSelectedAppointment(null)}
+                                                        aria-label="Close appointment details"
+                                                        autoFocus
+                                                    >
+                                                        Close
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
                                     )}
                                     <div className="pagination-controls">
                                         <a
@@ -760,14 +855,6 @@ function Dashboard() {
                                                             Download Image
                                                         </a>
                                                     )}
-                                                    {/* <button
-                                                        className="action-button"
-                                                        onClick={() => setSelectedRecord(null)}
-                                                        aria-label="Close medical record details"
-                                                        autoFocus
-                                                    >
-                                                        Close
-                                                    </button> */}
                                                 </div>
                                             </div>
                                         </div>
@@ -805,7 +892,6 @@ function Dashboard() {
                                     </div>
                                 </div>
                             )}
-
                         </div>
                     </div>
                 </section>

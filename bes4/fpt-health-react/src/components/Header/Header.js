@@ -208,42 +208,8 @@ function Header() {
         validateFn(e.target.value);
     };
 
-    const handleSuccessGoogle = async (credentialResponse) => {
-        try {
-            const { name, email } = jwtDecode(credentialResponse.credential);
-            const randomPassword = generateRandomPassword();
-            const response = await axios.post('http://localhost:8081/api/v1/patients/google-login', {
-                patient_name: name,
-                patient_email: email,
-                patient_password: randomPassword
-            });
-
-            const { patient_name, patient_id } = response.data;
-            if (patient_name && patient_id) {
-                setIsLoggedIn(true);
-                setPatientId(patient_id);
-                sessionStorage.setItem('username', patient_name);
-                sessionStorage.setItem('patient_id', patient_id);
-                setUsername(patient_name);
-                toggleLoginVisibility();
-                setAlertMess('Sign in successfully!');
-                setTimeout(() => {
-                    setAlertMess('');
-                }, 2000);
-            } else {
-                setAlertMess('Sign in failed!');
-                setTimeout(() => {
-                    setAlertMess('');
-                }, 2000);
-            }
-        } catch (error) {
-            console.error('Error during Google login!', error);
-            setAlertMess('Sign in failed!');
-            setTimeout(() => {
-                setAlertMess('');
-            }, 2000);
-        }
-    };
+ 
+    
 
 
     const handleGetCode = async () => {
@@ -517,10 +483,10 @@ function Header() {
                 <li>
                     <NavLink to="/news" className={({isActive}) => isActive ? "active" : ""}>News</NavLink>
                 </li>
-                {/* <li>
+                <li>
                     <NavLink to="/health-tips" className={({isActive}) => isActive ? "active" : ""}>Health
                         Tips</NavLink>
-                </li> */}
+                </li>
                 <li>
                     <NavLink to="/contact" className={({isActive}) => isActive ? "active" : ""}>Contact</NavLink>
                 </li>
@@ -791,9 +757,9 @@ function Header() {
                         <li>
                             <NavLink to="/news" onClick={toggleMenuVisibility}>News</NavLink>
                         </li>
-                        {/* <li>
+                        <li>
                             <NavLink to="/health-tips" onClick={toggleMenuVisibility}>Health Tips</NavLink>
-                        </li> */}
+                        </li>
                         <li>
                             <NavLink to="/contact" onClick={toggleMenuVisibility}>Contact</NavLink>
                         </li>

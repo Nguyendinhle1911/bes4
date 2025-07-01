@@ -10,8 +10,9 @@ const RecordDetails = () => {
     const [departmentData, setDepartmentData] = useState({});
     const [doctorData, setDoctorData] = useState({});
     const [loading, setLoading] = useState(true);
+    const [selectedRecord, setSelectedRecord] = useState(null);
     const location = useLocation();
-    const { record } = location.state || {};
+    const { records } = location.state || { records: [] };
 
     useEffect(() => {
         const scrollToTop = () => {
@@ -24,17 +25,30 @@ const RecordDetails = () => {
     }, []);
 
     useEffect(() => {
+        const fetchPatientData = async () => {
+            try {
+                if (records.length > 0 && records[0].patient_id) {
+                    const response = await axios.get(
+                        `http://localhost:8081/api/v1/patients/search?patient_id=${records[0].patient_id}`
+                    );
+                    setPatientData(response.data[0] || {});
+                }
+            } catch (error) {
+                console.error("Error fetching patient data", error);
+            }
+        };
+
         const fetchDoctorData = async () => {
             try {
-                if (record && record.doctors) {
-                    const fetchPromises = record.doctors.map(async (doc) => {
-                        const response = await axios.get(`http://localhost:8081/api/v1/departments/search?department_id=${doc.department_id}`);
+                if (records.length > 0 && records[0].doctors && records[0].doctors.length > 0) {
+                    const doc = records[0].doctors[0];
+                    setDoctorData(doc);
+                    if (doc.department_id) {
+                        const response = await axios.get(
+                            `http://localhost:8081/api/v1/departments/search?department_id=${doc.department_id}`
+                        );
                         setDepartmentData(response.data[0] || {});
-                        setDoctorData(doc);
-                    });
-                    await Promise.all(fetchPromises);
-                } else {
-                    console.error("Record or record.doctors is undefined");
+                    }
                 }
             } catch (error) {
                 console.error("Error fetching doctor data", error);
@@ -43,27 +57,16 @@ const RecordDetails = () => {
             }
         };
 
-        fetchDoctorData();
-    }, [record]);
-
-    useEffect(() => {
-        const fetchPatientData = async () => {
-            try {
-                const response = await axios.get(`http://localhost:8081/api/v1/patients/search?patient_id=${record.patient_id}`);
-                setPatientData(response.data[0] || {});
-            } catch (error) {
-                console.error("Error fetching patient data", error);
-            }
-        };
-
-        if (record && record.patient_id) {
+        if (records.length > 0) {
             fetchPatientData();
+            fetchDoctorData();
+        } else {
+            setLoading(false);
         }
-    }, [record.patient_id]);
+    }, [records]);
 
     const calculateAge = (dob) => {
         if (!dob) return 'Not Available';
-
         const birthDate = new Date(dob);
         const today = new Date();
         let age = today.getFullYear() - birthDate.getFullYear();
@@ -84,14 +87,13 @@ const RecordDetails = () => {
         });
     };
 
-    const generatePDF = () => {
-        const button = document.querySelector('.download-pdf-button');
+    const generatePDF = (record) => {
+        const button = document.querySelector(`.download-pdf-button-${record.record_id}`);
         const originalDisplay = button.style.display;
         button.style.display = 'none';
 
-        // Capture the content for PDF
-        const input = document.getElementById('record-details-container');
-        
+        const input = document.getElementById(`record-form-${record.record_id}`);
+
         html2canvas(input, {
             scale: 2,
             useCORS: true,
@@ -106,11 +108,9 @@ const RecordDetails = () => {
             let heightLeft = imgHeight;
             let position = 0;
 
-            // Add first page
             pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
             heightLeft -= pageHeight;
 
-            // Add additional pages if needed
             while (heightLeft >= 0) {
                 position -= pageHeight;
                 pdf.addPage();
@@ -118,11 +118,9 @@ const RecordDetails = () => {
                 heightLeft -= pageHeight;
             }
 
-            // Save PDF
             const fileName = `medical-record-${record.record_id}-${new Date().toISOString().split('T')[0]}.pdf`;
             pdf.save(fileName);
-            
-            // Restore button
+
             button.style.display = originalDisplay;
         }).catch((error) => {
             console.error('Error generating PDF:', error);
@@ -136,17 +134,13 @@ const RecordDetails = () => {
         return '👤';
     };
 
-    if (!record) {
-        return (
-            <div className="content">
-                <div className="record-details-container">
-                    <p style={{ textAlign: 'center', fontSize: '18px', color: '#666' }}>
-                        No record details available
-                    </p>
-                </div>
-            </div>
-        );
-    }
+    const handleRecordClick = (record) => {
+        setSelectedRecord(record);
+    };
+
+    const closeModal = () => {
+        setSelectedRecord(null);
+    };
 
     if (loading) {
         return (
@@ -162,13 +156,13 @@ const RecordDetails = () => {
 
     return (
         <div className="content">
-            <div className="record-details-container" id="record-details-container">
+            <div className="record-details-container">
                 <div className="record-header">
-                    <h1 className="record-title">Medical Record Details</h1>
-                    <span className="recordID">MRN: {record.record_id}</span>
+                    <h12 className="record-title">Medical Record Details</h12>
+                    <span className="recordID">Patient Email: {patientData.patient_email || 'N/A'}</span>
                 </div>
 
-                <section>
+                <section className="section">
                     <h4>
                         <div className="section-icon">I</div>
                         Patient Information
@@ -183,7 +177,6 @@ const RecordDetails = () => {
                                 </div>
                             </div>
                         </div>
-                        
                         <div className="patient-info-item">
                             <div className="patient-info-icon">🎂</div>
                             <div className="patient-info-content">
@@ -193,7 +186,6 @@ const RecordDetails = () => {
                                 </div>
                             </div>
                         </div>
-                        
                         <div className="patient-info-item">
                             <div className="patient-info-icon">{getGenderIcon(patientData.patient_gender)}</div>
                             <div className="patient-info-content">
@@ -203,7 +195,6 @@ const RecordDetails = () => {
                                 </div>
                             </div>
                         </div>
-                        
                         <div className="patient-info-item">
                             <div className="patient-info-icon">🏠</div>
                             <div className="patient-info-content">
@@ -213,7 +204,6 @@ const RecordDetails = () => {
                                 </div>
                             </div>
                         </div>
-                        
                         <div className="patient-info-item">
                             <div className="patient-info-icon">📧</div>
                             <div className="patient-info-content">
@@ -223,7 +213,6 @@ const RecordDetails = () => {
                                 </div>
                             </div>
                         </div>
-                        
                         <div className="patient-info-item">
                             <div className="patient-info-icon">📅</div>
                             <div className="patient-info-content">
@@ -239,82 +228,122 @@ const RecordDetails = () => {
                 <section>
                     <h4>
                         <div className="section-icon">II</div>
-                        Diagnosis & Medical Information
+                        Medical Records List
                     </h4>
-                    <div className="diagnosis-grid">
-                        <div className="diagnosis-item">
-                            <p><strong>Record Date:</strong> {formatDate(record.follow_up_date)}</p>
-                        </div>
-                        <div className="diagnosis-item">
-                            <p><strong>Department:</strong> {departmentData.department_name || 'Not Available'}</p>
-                        </div>
-                        <div className="diagnosis-item">
-                            <p><strong>Attending Physician:</strong> {doctorData.doctor_name || 'Not Available'}</p>
-                        </div>
-                        <div className="diagnosis-item">
-                            <p><strong>Status:</strong> <span className="status-badge">Active</span></p>
-                        </div>
-                    </div>
-                    
-                    <div style={{ marginTop: '20px' }}>
-                        <p><strong>Chief Complaint & Symptoms:</strong></p>
-                        <div className="notes-container">
-                            {record.symptoms || 'No symptoms recorded'}
-                        </div>
-                        
-                        <p><strong>Primary Diagnosis:</strong></p>
-                        <div className="notes-container">
-                            {record.diagnosis || 'No diagnosis recorded'}
-                        </div>
-                    </div>
-                    
-                    {record.image && (
-                        <div className="medical-image-container">
-                            <h5 style={{ marginBottom: '15px', color: '#004b91' }}>Medical Imaging</h5>
-                            <img
-                                src={record.image}
-                                alt="Medical record imaging"
-                                onError={(e) => {
-                                    e.target.style.display = 'none';
-                                    e.target.nextSibling.style.display = 'block';
-                                }}
-                            />
-                            <div style={{ display: 'none', color: '#666', fontStyle: 'italic' }}>
-                                Medical image could not be loaded
-                            </div>
-                        </div>
-                    )}
-                </section>
-
-                <section>
-                    <h4>
-                        <div className="section-icon">III</div>
-                        Treatment Plan & Medications
-                    </h4>
-                    <p><strong>Prescribed Medications:</strong></p>
-                    <div className="notes-container">
-                        {record.prescription || 'No prescription recorded'}
-                    </div>
-                    
-                    <p><strong>Treatment Plan & Prognosis:</strong></p>
-                    <div className="prognosis-container">
-                        {record.treatment || 'No treatment plan recorded'}
-                    </div>
-                    
-                    <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#f0f9ff', border: '1px solid #0ea5e9', borderRadius: '8px' }}>
-                        <p style={{ margin: '0', fontSize: '14px', color: '#0369a1' }}>
-                            <strong>Important:</strong> This medical record is confidential and should be handled according to HIPAA guidelines. 
-                            Please consult with your healthcare provider for any questions regarding this medical information.
-                        </p>
+                    <div className="records-list">
+                        {records.length === 0 ? (
+                            <p style={{ textAlign: 'center', fontSize: '18px', color: '#666' }}>
+                                No record details available
+                            </p>
+                        ) : (
+                            records.map((record) => (
+                                <div
+                                    key={record.record_id}
+                                    className="record-list-item"
+                                    onClick={() => handleRecordClick(record)}
+                                >
+                                    <div className="record-list-id">MR-{String(record.record_id).padStart(4, '0')}</div>
+                                    <div className="record-list-date">{formatDate(record.follow_up_date)}</div>
+                                    <div className="record-list-department">
+                                        {departmentData.department_name || 'Not Available'}
+                                    </div>
+                                    <div className="record-list-doctor">
+                                        {doctorData.doctor_name || 'Not Available'}
+                                    </div>
+                                    <div className="record-list-status">
+                                        <span className="status-badge">Active</span>
+                                    </div>
+                                </div>
+                            ))
+                        )}
                     </div>
                 </section>
 
-                <button onClick={generatePDF} className="download-pdf-button">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
-                    </svg>
-                    <span>Download Medical Record</span>
-                </button>
+                {selectedRecord && (
+                    <div className="modal-overlay">
+                        <div className="modal-content">
+                            <button className="modal-close-button" onClick={closeModal}>
+                                ✕
+                            </button>
+                            <form id={`record-form-${selectedRecord.record_id}`} className="record-form">
+                                <h5>Record ID: MR-{String(selectedRecord.record_id).padStart(4, '0')}</h5>
+                                <div className="diagnosis-grid">
+                                    <div className="diagnosis-item">
+                                        <p><strong>Record Date:</strong> {formatDate(selectedRecord.follow_up_date)}</p>
+                                    </div>
+                                    <div className="diagnosis-item">
+                                        <p><strong>Department:</strong> {departmentData.department_name || 'Not Available'}</p>
+                                    </div>
+                                    <div className="diagnosis-item">
+                                        <p><strong>Attending Physician:</strong> {doctorData.doctor_name || 'Not Available'}</p>
+                                    </div>
+                                    <div className="diagnosis-item">
+                                        <p><strong>Status:</strong> <span className="status-badge">Active</span></p>
+                                    </div>
+                                </div>
+
+                                <div style={{ marginTop: '20px' }}>
+                                    <p><strong>Chief Complaint & Symptoms:</strong></p>
+                                    <div className="notes-container">
+                                        {selectedRecord.symptoms || 'No symptoms recorded'}
+                                    </div>
+
+                                    <p><strong>Primary Diagnosis:</strong></p>
+                                    <div className="notes-container">
+                                        {selectedRecord.diagnosis || 'No diagnosis recorded'}
+                                    </div>
+                                </div>
+
+                                {selectedRecord.image && (
+                                    <div className="medical-image-container">
+                                        <h5 style={{ marginBottom: '15px', color: '#004b91' }}>Medical Imaging</h5>
+                                        <img
+                                            src={selectedRecord.image}
+                                            alt={`Medical record imaging ${selectedRecord.record_id}`}
+                                            onError={(e) => {
+                                                e.target.style.display = 'none';
+                                                e.target.nextSibling.style.display = 'block';
+                                            }}
+                                        />
+                                        <div style={{ display: 'none', color: '#666', fontStyle: 'italic' }}>
+                                            Medical image could not be loaded
+                                        </div>
+                                    </div>
+                                )}
+
+                                <div style={{ marginTop: '20px' }}>
+                                    <p><strong>Prescribed Medications:</strong></p>
+                                    <div className="notes-container">
+                                        {selectedRecord.prescription || 'No prescription recorded'}
+                                    </div>
+
+                                    <p><strong>Treatment Plan & Prognosis:</strong></p>
+                                    <div className="prognosis-container">
+                                        {selectedRecord.treatment || 'No treatment plan recorded'}
+                                    </div>
+                                </div>
+
+                                <button
+                                    type="button"
+                                    onClick={() => generatePDF(selectedRecord)}
+                                    className={`download-pdf-button download-pdf-button-${selectedRecord.record_id}`}
+                                >
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
+                                    </svg>
+                                    <span>Download Record {String(selectedRecord.record_id).padStart(4, '0')}</span>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                )}
+
+                <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#f0f9ff', border: '1px solid #0ea5e9', borderRadius: '8px' }}>
+                    <p style={{ margin: '0', fontSize: '14px', color: '#0369a1' }}>
+                        <strong>Important:</strong> These medical records are confidential and should be handled according to HIPAA guidelines.
+                        Please consult with your healthcare provider for any questions regarding this medical information.
+                    </p>
+                </div>
             </div>
         </div>
     );

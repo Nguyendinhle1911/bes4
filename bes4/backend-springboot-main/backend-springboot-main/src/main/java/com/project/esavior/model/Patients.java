@@ -21,7 +21,7 @@ public class Patients {
     @Column(name = "patient_name", nullable = false)
     private String patientName;
 
-    @Column(name = "patient_phone", nullable = false, unique = true)
+    @Column(name = "patient_phone", unique = true)
     private String phoneNumber;
 
     @Column(name = "zip_code")

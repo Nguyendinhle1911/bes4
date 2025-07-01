@@ -15,6 +15,8 @@
     font-size: 16px;
     line-height: 1.6; /* Tăng khoảng cách giữa các dòng */
     color: #333;
+    margin-bottom: 9px;
+    width: 92%;
 }
 
 .prediction p {
@@ -142,6 +144,7 @@
     justify-content: space-between;
     align-items: center;
     box-sizing: border-box;
+        margin-top: 10px;
 }
 
 .prediction-btn, .change-photo-btn{
@@ -351,4 +354,52 @@
     border-radius: 25px;
     text-align: left;
     font-size: 16px;
+}
+
+
+/*  */
+.symptoms-input {
+    width: 80%; /* Match the width of .upload-photo and .diagnosis-action */
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+}
+
+.symptoms-input label {
+    display: block;
+    font-weight: bold;
+    font-size: 18px; /* Consistent with other text sizes */
+    color: #ffffff; /* White text to match the .diagnosis-content-right background */
+    margin-bottom: 10px;
+    text-align: left;
+    width: 100%; /* Ensure label spans the full width */
+    text-transform: uppercase; /* Match the style of other headings */
+}
+
+.symptoms-input textarea {
+    width: 100%;
+    padding: 12px 15px; /* Slightly more padding for comfort */
+    border: 2px solid rgba(255, 255, 255, 0.5); /* Subtle white border to match buttons */
+    border-radius: 10px; /* Rounded corners to match other elements */
+    background-color: rgba(255, 255, 255, 0.1); /* Semi-transparent background for contrast */
+    color: #ffffff; /* White text for readability on dark background */
+    font-size: 16px; /* Consistent with other inputs/buttons */
+    resize: vertical; /* Allow vertical resizing */
+    max-height: 50px; /* Limit excessive resizing */
+    transition: all 0.3s ease-in-out; /* Smooth transitions for hover/focus */
+}
+
+.symptoms-input textarea:focus {
+    outline: none;
+    border-color: #ffffff; /* Brighten border on focus */
+    background-color: rgba(255, 255, 255, 0.2); /* Slightly brighter background */
+    box-shadow: 0 0 5px rgba(255, 255, 255, 0.5); /* Subtle glow effect */
+}
+
+.symptoms-input textarea::placeholder {
+    color: rgba(255, 255, 255, 0.6); /* Light placeholder text */
+    font-style: italic; /* Italicize placeholder for distinction */
 }

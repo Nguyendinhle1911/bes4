@@ -753,6 +753,15 @@
             gap: 1rem;
             margin-top: 2rem;
         }
+        .appointment-detail-button {
+    background: #004b91;
+    color: #fff;
+    border: none;
+    padding: 6px 16px;
+    border-radius: 4px;
+    margin-right: 8px;
+    cursor: pointer;
+}
 
         .action-button {
             padding: 0.75rem 1.5rem;

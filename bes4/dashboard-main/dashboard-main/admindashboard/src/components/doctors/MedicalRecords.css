@@ -216,8 +216,9 @@
 }
 
 .stat-card:hover {
-    transform: translateY(-4px);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    background: linear-gradient(145deg,hsl(209, 46.60%, 45.50%),rgb(19, 91, 159));
+
 }
 
 .stat-number {
@@ -266,7 +267,7 @@
 }
 
 .record-id {
-    display: flex;
+    /* display: flex; */
     align-items: center;
     font-weight: 700;
     color:rgb(255, 255, 255);

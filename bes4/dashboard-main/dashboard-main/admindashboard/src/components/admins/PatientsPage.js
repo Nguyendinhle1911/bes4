@@ -95,7 +95,7 @@ const PatientsPage = () => {
                         <button onClick={handleSearch}>Search</button>
                     </div>
                 </div>
-                <div className="table-container">
+                <div className="table-container-1">
                 <table>
                         <thead>
                         <tr>

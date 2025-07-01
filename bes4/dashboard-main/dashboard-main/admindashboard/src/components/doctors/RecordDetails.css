@@ -5,14 +5,13 @@
     background-color: #ffffff;
     border-radius: 12px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    position: relative;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    line-height: 1.7;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    /* line-height: 1.7; */
 }
 
 /* Header Section */
 .record-header {
-    background: linear-gradient(135deg, #004b91 0%,  #004b91 100%);
+    background: linear-gradient(145deg, #004B91, #004B91);
     margin: -40px -40px 30px -40px;
     padding: 30px 40px;
     border-radius: 12px 12px 0 0;
@@ -20,13 +19,12 @@
     position: relative;
 }
 
-.record-details-container .record-title {
+.record-title {
     text-align: center;
-    color: white;
     margin: 0;
     font-size: 32px;
-    font-weight: 600;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    font-weight: 700;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .recordID {
@@ -35,8 +33,8 @@
     right: 40px;
     font-size: 14px;
     font-weight: 600;
-    color: rgba(255, 255, 255, 0.9);
-    background-color: rgba(255, 255, 255, 0.2);
+    color: white;
+    background-color: rgba(255, 255, 255, 0.15);
     padding: 8px 16px;
     border-radius: 20px;
     border: 1px solid rgba(255, 255, 255, 0.3);
@@ -44,51 +42,43 @@
 }
 
 /* Section Styling */
-.record-details-container section {
+.section {
     margin-bottom: 35px;
-    background-color: #fafbfc;
-    border: 1px solid #e1e8ed;
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
     border-radius: 8px;
     padding: 25px;
-    transition: all 0.3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.record-details-container section h4 {
-    color: #004b91;
+/* section:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+} */
+
+section h4 {
+    color: #1e3a8a;
     font-weight: 700;
     font-size: 22px;
     margin-bottom: 20px;
     padding-bottom: 10px;
-    border-bottom: 3px solid #004b91;
+    border-bottom: 3px solid #3b82f6;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
 }
 
 .section-icon {
-    width: 24px;
-    height: 24px;
-    background-color: #004b91;
+    width: 28px;
+    height: 28px;
+    background-color: #1e3a8a;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
-    font-size: 12px;
+    font-size: 14px;
     font-weight: bold;
-}
-
-.record-details-container p {
-    margin: 12px 0;
-    font-size: 16px;
-    color: #333;
-}
-
-.record-details-container strong {
-    font-weight: 600;
-    color: #1a1a1a;
-    min-width: 140px;
-    display: inline-block;
 }
 
 /* Patient Info Grid */
@@ -102,33 +92,31 @@
 .patient-info-item {
     background-color: white;
     padding: 15px;
-    border-radius: 6px;
-    border: 1px solid #e1e8ed;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
     display: flex;
     align-items: center;
     gap: 12px;
+    transition: transform 0.2s ease;
 }
 
+
 .patient-info-icon {
-    width: 36px;
-    height: 36px;
-    background: linear-gradient(135deg, #004b91, #0066cc);
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #1e3a8a, #3b82f6);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
-    font-size: 16px;
+    font-size: 18px;
     flex-shrink: 0;
-}
-
-.patient-info-content {
-    flex: 1;
 }
 
 .patient-info-label {
     font-size: 12px;
-    color: #666;
+    color: #6b7280;
     text-transform: uppercase;
     letter-spacing: 0.5px;
     margin-bottom: 4px;
@@ -137,7 +125,94 @@
 .patient-info-value {
     font-size: 16px;
     font-weight: 600;
-    color: #333;
+    color: #1f2937;
+}
+
+/* Records List */
+.records-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.record-list-item {
+    background-color: white;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    display: grid;
+    grid-template-columns: 1fr 2fr 2fr 2fr 1fr;
+    gap: 15px;
+    align-items: center;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.record-list-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.record-list-id {
+    font-weight: 600;
+    color: #1e3a8a;
+}
+
+.record-list-date, .record-list-department, .record-list-doctor {
+    color: #1f2937;
+}
+
+.record-list-status {
+    text-align: right;
+}
+
+/* Modal Styling */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+     height: 167vh;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    overflow: auto;
+}
+
+.modal-content {
+    background-color: #ffffff;
+    max-width: 900px;
+    width: 90%;
+    padding: 30px;
+    position: relative;
+    height: 100vh; /* Chiều cao bằng toàn bộ viewport */
+    max-height: 100vh; /* Đảm bảo không vượt quá chiều cao viewport */
+    overflow-y: auto; /* Cho phép cuộn dọc nếu nội dung dài */
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.modal-close-button {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: #dc2626;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.3s ease;
+}
+
+.modal-close-button:hover {
+    background: #b91c1c;
 }
 
 /* Diagnosis Section */
@@ -152,7 +227,7 @@
     background-color: white;
     padding: 15px;
     border-radius: 6px;
-    border-left: 4px solid #004b91;
+    border-left: 4px solid #3b82f6;
 }
 
 /* Medical Image */
@@ -162,12 +237,12 @@
     background-color: white;
     padding: 20px;
     border-radius: 8px;
-    border: 2px dashed #ddd;
+    border: 2px dashed #e2e8f0;
 }
 
 .medical-image-container img {
     max-width: 100%;
-    max-height: 300px;
+    max-height: 400px;
     object-fit: contain;
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
@@ -176,7 +251,7 @@
 /* Treatment Containers */
 .notes-container, .prognosis-container {
     background-color: white;
-    border: 1px solid #e1e8ed;
+    border: 1px solid #e2e8f0;
     padding: 20px;
     border-radius: 8px;
     margin-top: 15px;
@@ -191,8 +266,8 @@
     position: absolute;
     top: 15px;
     right: 15px;
-    font-size: 20px;
-    opacity: 0.3;
+    font-size: 24px;
+    opacity: 0.2;
 }
 
 .prognosis-container::before {
@@ -200,13 +275,13 @@
     position: absolute;
     top: 15px;
     right: 15px;
-    font-size: 20px;
-    opacity: 0.3;
+    font-size: 24px;
+    opacity: 0.2;
 }
 
 /* Download Button */
 .download-pdf-button {
-    display: flex !important;
+    display: flex;
     flex-direction: row;
     justify-content: center;
     align-items: center;
@@ -256,12 +331,12 @@
         padding: 20px;
         margin: 1vh 10px;
     }
-    
+
     .record-header {
         margin: -20px -20px 20px -20px;
         padding: 20px;
     }
-    
+
     .recordID {
         position: static;
         display: block;
@@ -269,17 +344,31 @@
         margin-top: 15px;
         background-color: rgba(255, 255, 255, 0.3);
     }
-    
+
     .patient-info-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .diagnosis-grid {
         grid-template-columns: 1fr;
     }
-    
-    .record-details-container .record-title {
+
+    .record-title {
         font-size: 24px;
+    }
+
+    .record-list-item {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+
+    .record-list-status {
+        text-align: center;
+    }
+
+    .modal-content {
+        width: 95%;
+        padding: 20px;
     }
 }
 
@@ -290,13 +379,17 @@
         margin: 0;
         padding: 20px;
     }
-    
-    .download-pdf-button {
+
+    .download-pdf-button, .modal-close-button {
         display: none !important;
     }
-    
+
     .record-header {
-        background: #004b91 !important;
+        background: #1e3a8a !important;
         -webkit-print-color-adjust: exact;
+    }
+
+    .modal-overlay, .records-list {
+        display: none;
     }
 }

@@ -60,7 +60,7 @@
 .main-content {
     flex: 1;
     background-color: #f8f9fa;
-    padding: 20px;
+    /* padding: 20px; */
 }
 
 .topbar {
@@ -168,7 +168,8 @@
 }
 
 .table th {
-    background-color: #f2f2f2;
+    /* background-color: #f2f2f2; */
+     background-color: #004b91;
     text-align: left;
 }
 
@@ -223,7 +224,7 @@ body, html {
 .main-content {
     flex-grow: 1; /* Take remaining width */
     overflow: auto; /* Allow scrolling within the main content area if needed */
-    padding: 20px;
+    /* padding: 20px; */
 }
 
 .content {

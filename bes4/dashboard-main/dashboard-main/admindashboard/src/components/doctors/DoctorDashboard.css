@@ -10,7 +10,7 @@
     background-color: #f8f9fa;
     flex-grow: 1;
     overflow: auto;
-    padding: 20px;
+    /* padding: 20px; */
 }
 
 .doctor-info {
@@ -194,6 +194,7 @@ h4 {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
+    padding: 30px;
 }
 
 .search {
@@ -233,24 +234,6 @@ h4 {
     background-color: white;
     color: #004B91;
     box-shadow: 0 0 3px #004B91;
-}
-
-.profile button {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    padding: 8px 16px;
-    background-color: red;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-.profile button:hover {
-    background-color: white;
-    color: red;
-    box-shadow: 0 0 3px red;
 }
 
 .today-appointments-table {

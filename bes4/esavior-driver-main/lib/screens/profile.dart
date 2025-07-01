@@ -3,7 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-const primaryColor = Color.fromARGB(255, 200, 50, 0);
+const primaryColor = Colors.blue;
 const whiteColor = Color.fromARGB(255, 255, 255, 255);
 const blackColor = Color.fromARGB(255, 0, 0, 0);
 const blueColor = Color.fromARGB(255, 33, 150, 233);
@@ -105,7 +105,7 @@ class _ProfileState extends State<Profile> {
   Future<void> updateDriver(Map<String, dynamic> driverData) async {
     final response = await http.put(
       Uri.parse(
-          'https://techwiz-b3fsfvavawb9fpg8.japanwest-01.azurewebsites.net/api/drivers/${widget.driverData?['driverId']}'),
+          'http://10.0.2.2:8080/api/drivers/${widget.driverData?['driverId']}'),
       headers: {
         'Content-Type': 'application/json',
       },

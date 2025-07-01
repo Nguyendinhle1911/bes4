@@ -22,6 +22,16 @@ html, body, #root {
     display: flex;
     flex-direction: column;
 }
+.table-container-1 table thead th {
+ position: sticky;
+  top: 0;
+  background-color: #004B91;
+  color: white;
+  padding: 10px;
+  text-align: left;
+   z-index: 1;
+}
+
 
 .header-container {
     display: flex;
@@ -47,7 +57,7 @@ html, body, #root {
     background-color: #1565c0;
 }
 
-.table-container {
+.table-container-1 {
     overflow-x: auto;
 }
 

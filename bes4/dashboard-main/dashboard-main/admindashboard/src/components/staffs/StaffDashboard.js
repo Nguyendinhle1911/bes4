@@ -234,37 +234,103 @@ const StaffDashboard = () => {
             </div>
             <main>
                 {error && <p className="error-message">{error}</p>}
-                <section className="appointment-list">
-                    {searchResults.map((appointment) => (
-                        <div className="appointment-card" key={appointment.appointment_id}>
-                            <p><strong>Patient Name:</strong> {getPatientName(appointment.patient_id) || 'N/A'}</p>
-                            <p><strong>Doctor Name:</strong> {getDoctorName(appointment.doctor_id)}</p>
-                            <p><strong>Appointment Date:</strong> {appointment.medical_day}</p>
-                            <p><strong>Appointment Time:</strong> {formatTimeSlot(appointment.slot)}</p>
-                            <p><strong>Status:</strong> {appointment.status}</p>
-                            <p><strong>Price:</strong> {appointment.price}$</p>
-                            <p><strong>Staff Name:</strong> {getStaffName(appointment.staff_id) || 'N/A'}</p>
-                            {appointment.status === 'Pending' && (
-                                <button onClick={() => handleUpdateStatus(appointment.appointment_id, 'Confirmed')}
-                                        className="action-button confirm-button">Confirm</button>
-                            )}
-                            {appointment.status === 'Confirmed' && (
-                                <>
-                                    <button onClick={() => handleUpdateStatus(appointment.appointment_id, 'Completed')}
-                                            className="action-button complete-button">Complete
+             <section className="appointment-list">
+    {searchResults.length > 0 ? (
+        <table className="appointment-table">
+            <thead>
+                <tr>
+                    <th>Patient</th>
+                    <th>Doctor</th>
+                    <th>Date & Time</th>
+                    <th>Status</th>
+                    <th>Price</th>
+                    <th>Staff</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {searchResults.map((appointment) => (
+                    <tr key={appointment.appointment_id}>
+                        <td>
+                            <div className="patient-info">
+                                {getPatientName(appointment.patient_id) || 'N/A'}
+                            </div>
+                        </td>
+                        <td>
+                            <div className="doctor-info">
+                                {getDoctorName(appointment.doctor_id)}
+                            </div>
+                            <div className="date-time">
+                                {getDepartmentName(appointment.doctor_id)}
+                            </div>
+                        </td>
+                        <td>
+                            <div>{appointment.medical_day}</div>
+                            <div className="date-time">
+                                {formatTimeSlot(appointment.slot)}
+                            </div>
+                        </td>
+                        <td>
+                            <span className={`status-badge status-${appointment.status.toLowerCase()}`}>
+                                {appointment.status}
+                            </span>
+                        </td>
+                        <td>
+                            <div className="price-cell">
+                                ${appointment.price}
+                            </div>
+                        </td>
+                        <td>
+                            <div className="staff-info">
+                                {getStaffName(appointment.staff_id) || 'N/A'}
+                            </div>
+                        </td>
+                        <td>
+                            <div className="actions-cell">
+                                {appointment.status === 'Pending' && (
+                                    <button 
+                                        onClick={() => handleUpdateStatus(appointment.appointment_id, 'Confirmed')}
+                                        className="action-button confirm-button"
+                                    >
+                                        Confirm
                                     </button>
-                                    <button onClick={() => handleUpdateStatus(appointment.appointment_id, 'Cancelled')}
-                                            className="action-button cancel-button">Cancel
+                                )}
+                                {appointment.status === 'Confirmed' && (
+                                    <>
+                                        <button 
+                                            onClick={() => handleUpdateStatus(appointment.appointment_id, 'Completed')}
+                                            className="action-button complete-button"
+                                        >
+                                            Complete
+                                        </button>
+                                        <button 
+                                            onClick={() => handleUpdateStatus(appointment.appointment_id, 'Cancelled')}
+                                            className="action-button cancel-button"
+                                        >
+                                            Cancel
+                                        </button>
+                                    </>
+                                )}
+                                {appointment.status !== 'Completed' && (
+                                    <button 
+                                        onClick={() => handleEditClick(appointment)}
+                                        className="action-button edit-button"
+                                    >
+                                        Edit
                                     </button>
-                                </>
-                            )}
-                            {appointment.status !== 'Completed' && (
-                                <button onClick={() => handleEditClick(appointment)}
-                                        className="action-button edit-button">Edit</button>
-                            )}
-                        </div>
-                    ))}
-                </section>
+                                )}
+                            </div>
+                        </td>
+                    </tr>
+                ))}
+            </tbody>
+        </table>
+    ) : (
+        <div style={{ padding: '40px', textAlign: 'center', color: '#666' }}>
+            <p>No appointments found for the selected criteria.</p>
+        </div>
+    )}
+</section>
             </main>
             {editItem && (
                 <EditAppointmentModal

@@ -87,6 +87,15 @@ html, body, #root {
     overflow-y: auto;
     margin-top: 65px;
 }
+.table-container table thead th {
+ position: sticky;
+  top: 0;
+  background-color: #004B91;
+  color: white;
+  padding: 10px;
+  text-align: left;
+   z-index: 1;
+}
 
 table {
     width: 100%;

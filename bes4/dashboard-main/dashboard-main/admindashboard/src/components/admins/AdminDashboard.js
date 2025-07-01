@@ -319,7 +319,7 @@ const AdminDashboard = () => {
                             <h2>Appointment Statistics</h2>
                             <AppointmentsChart appointments={appointmentsRange} />
                         </div>
-                        <div className="chart">
+                        {/* <div className="chart">
                             <h2>Today's Appointments</h2>
                             <button onClick={handleShowTodayAppointments}>
                                 {showTodayAppointments ? "Hide Today's Appointments" : "Show Today's Appointments"}
@@ -354,7 +354,7 @@ const AdminDashboard = () => {
                                     </tbody>
                                 </table>
                             )}
-                        </div>
+                        </div> */}
                     </div>
                     {/* Removed searchResults handling */}
                 </div>
