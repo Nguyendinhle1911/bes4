@@ -68,8 +68,8 @@ public class SendEmailUsername {
         }
     }
     public void sendEmailFormRegister(String doctorName, String departmentName, String medicalDay, String patientEmail, String patientName,String timeSlot) {
-        final String username = "thuddth2307004@fpt.edu.vn";
-        final String password = "kyxm zvbz nvsn uxxx";
+        final String username = "hongphuc0835@gmail.com";
+        final String password = "joia vkwu vppg pdvu";
         String subject = "Appointment Notification";
         String body = "<html>" +
                 "<head>" +
@@ -127,8 +127,8 @@ public class SendEmailUsername {
     }
 
     public static void sendEmailForgot(String name, String email, String code) {
-        final String username = "thuddth2307004@fpt.edu.vn";
-        final String password = "kyxm zvbz nvsn uxxx";
+        final String username = "hongphuc0835@gmail.com";
+        final String password = "joia vkwu vppg pdvu";
         String subject = "Password Reset Request";
         String body = "<html>" +
                 "<head>" +
@@ -184,8 +184,8 @@ public class SendEmailUsername {
         }
     }
     public void sendEmailReply(String name, String email, String message) {
-        final String username = "thuddth2307004@fpt.edu.vn";
-        final String password = "kyxm zvbz nvsn uxxx";
+     final String username = "hongphuc0835@gmail.com";
+        final String password = "joia vkwu vppg pdvu";
         String subject = "Feedback Reply";
         String body = "<html>" +
                 "<head>" +
@@ -235,8 +235,8 @@ public class SendEmailUsername {
         }
     }
     public void sendEmailToDoctor(String doctorName, String departmentName, String appointmentDate, String doctorEmail, String patientName, String timeSlot) {
-        final String username = "thuddth2307004@fpt.edu.vn";
-        final String password = "kyxm zvbz nvsn uxxx";
+        final String username = "hongphuc0835@gmail.com";
+        final String password = "joia vkwu vppg pdvu";
         String subject = "Appointment Notification";
         String body = "<html>" +
                 "<head>" +
